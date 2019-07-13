@@ -2,8 +2,8 @@ package test;
 
 import Interpreters.DependencyFileReaderFactory;
 import Interpreters.dependencyFileReader;
-import courseManager.Course;
-import courseManager.CourseManager;
+import CourseManagement.Course;
+import CourseManagement.CourseManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

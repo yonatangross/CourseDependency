@@ -1,4 +1,4 @@
-package courseManager;
+package CourseManagement;
 
 import Algorithms.StringMatchers.LevenshteinDistance;
 import Algorithms.StringMatchers.StringMatcher;
@@ -18,6 +18,7 @@ public class CourseManager {
     private static final int PREREQUISITE_COL_NUMBER = 2;
     private static final int PARALLELREQUESTS_COL_NUMBER = 3;
     private final Logger logger = LoggerFactory.getLogger(CourseManager.class);
+    private final int courseNameLengthThreshold = 50;
     private HashMap<String, Course> courseHashMap = new HashMap<>();
     private HashMap<String, String> courseNameHashMap = new HashMap<>();
     private SchoolType schoolType;
@@ -27,19 +28,16 @@ public class CourseManager {
         //TODO: foreach school make dictionary of spelling errors and one for the abstract class.
     }
 
-    //TODO: Create dictionary of spelling errors.
-    //TODO: Go over the array of illegal courses and name and change them with levinstein distance algo and compare them
-    // to the courses in the hashmap.
-    //TODO: Replace the errors.
     public HashMap<String, Course> getCourseHashMap() {
         return courseHashMap;
     }
 
     public void readCourseTable(String[][] dependenciesTable) {
-        //TODO: Change from reading in rows to reading in columns
-        // only read courseCode and courseName
-        // create map. and then read the rest
-        // change course with using composite design pattern.
+        readBasicDetailsFromTable(dependenciesTable);
+        fillRequestsColumnsFromTable(dependenciesTable);
+    }
+
+    private void readBasicDetailsFromTable(String[][] dependenciesTable) {
         for (int i = 1; i < dependenciesTable.length; i++) {
             String[] courseRow = dependenciesTable[i];
             List<Course> currentCourses = readBasicDetailsFromTableRow(courseRow);
@@ -49,7 +47,9 @@ public class CourseManager {
                 courseHashMap.put(course.getCode(), course);
             }
         }
+    }
 
+    private void fillRequestsColumnsFromTable(String[][] dependenciesTable) {
         for (int i = 1; i < dependenciesTable.length; i++) {
             String[] tableRow = dependenciesTable[i];
             List<String> coursesCodes = getCourseDetail(tableRow, CODE_COL_NUMBER);
@@ -62,9 +62,7 @@ public class CourseManager {
                     course.setCourseParallelRequests(courseParallelRequests);
                 }
             } catch (NullPointerException e) {
-                System.out.println(e.getClass() + " Exception" + e.getCause());
-                //TODO: print list of empty lists.
-
+                logger.error(e.toString() + " " + e.getCause());
                 e.printStackTrace();
             }
         }
@@ -86,6 +84,17 @@ public class CourseManager {
             ex.printStackTrace();
         }
         return null; // error.
+    }
+
+    private List<String> getFixedNames(List<String> codes, List<String> names) {
+        List<String> updatedNames = new LinkedList<>();
+        if (codes.size() == 1 && 1 < names.size())
+            // local fix 2 lines to 1.
+            updatedNames.add(names.get(0) + " " + names.get(1));
+        else {
+            logger.error("Unhandled situation!\n course input invalid {}", names.toString());
+        }
+        return updatedNames;
     }
 
     private void addCoursesInRow(List<Course> rowCourses, List<String> codes, List<String> names) {
@@ -212,14 +221,18 @@ public class CourseManager {
 
     }
 
-    // למידה חישובית וכריית נתונים (למידה ממוחשבת) 600089
+
     //תכנות אלגוריתמי ב- java  או	פתוח תכנה מתקדם II
     private List<List<String>> parseRequestsList(String cleanRequests) {
-        final int courseNameLengthThreshold=50;
+        final int courseNameLengthThreshold = 50;
         String[] splitWordsArray = {" או ", "/", " או\t", "\\n", "\\t", ",", "."};
         LinkedList<List<String>> courseRequests = new LinkedList<>();
         String[] requests = cleanRequests.split("[\\n\\t,.]| או\t");
 
+        return getCourseRequestsList(courseRequests, requests);
+    }
+
+    private List<List<String>> getCourseRequestsList(LinkedList<List<String>> courseRequests, String[] requests) {
         List<String> requestsList = Arrays.stream(requests).filter(s -> !s.isEmpty()).map(String::trim).collect(Collectors.toList());
         int requestListIndex = 0;
         while (requestListIndex < requestsList.size()) {
@@ -280,16 +293,6 @@ public class CourseManager {
         return courses;
     }
 
-    private List<String> getFixedNames(List<String> codes, List<String> names) {
-        List<String> updatedNames = new LinkedList<>();
-        if (codes.size() == 1 && 1 < names.size())
-            // local fix 2 lines to 1.
-            updatedNames.add(names.get(0) + " " + names.get(1));
-        else {
-            logger.error("Unhandled situation!\n course input invalid {}", names.toString());
-        }
-        return updatedNames;
-    }
 
     public enum SchoolType {
         COMPUTER_SCIENCE, PSYCHOLOGY

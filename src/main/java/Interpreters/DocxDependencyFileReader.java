@@ -1,6 +1,6 @@
 package Interpreters;
 
-import courseManager.CourseManager;
+import CourseManagement.CourseManager;
 import org.apache.poi.xwpf.usermodel.*;
 
 import java.io.File;
