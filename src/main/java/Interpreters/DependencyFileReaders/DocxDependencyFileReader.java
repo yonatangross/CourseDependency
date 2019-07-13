@@ -1,6 +1,6 @@
-package Interpreters;
+package Interpreters.DependencyFileReaders;
 
-import courseManager.CourseManager;
+import CourseManagement.CourseManager;
 import org.apache.poi.xwpf.usermodel.*;
 
 import java.io.File;
@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DocxDependencyFileReader extends dependencyFileReader {
+public class DocxDependencyFileReader extends DependencyFileReader {
     DocxDependencyFileReader(File file) {
         super(file);
     }

@@ -1,4 +1,4 @@
-package Interpreters;
+package Interpreters.DependencyFileReaders;
 
 
 import java.io.File;

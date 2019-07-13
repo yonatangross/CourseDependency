@@ -1,19 +1,19 @@
-package Interpreters;
+package Interpreters.DependencyFileReaders;
 
-import courseManager.CourseManager;
+import CourseManagement.CourseManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
 
-public abstract class dependencyFileReader {
+public abstract class DependencyFileReader {
     final Logger logger;
     File file;
     CourseManager.SchoolType schoolType = null;
     String[][] dependenciesTable = null;
 
-    dependencyFileReader(File file) {
+    DependencyFileReader(File file) {
         this.file = file;
         logger = LoggerFactory.getLogger(getClass());
     }

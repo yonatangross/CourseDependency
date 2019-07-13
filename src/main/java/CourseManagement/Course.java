@@ -1,4 +1,4 @@
-package courseManager;
+package CourseManagement;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +12,7 @@ public class Course implements Serializable {
     public Course() {
     }
 
-    Course(String code, String name) {
+    public Course(String code, String name) {
         this.code = code;
         this.name = name;
     }

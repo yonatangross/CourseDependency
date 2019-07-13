@@ -1,9 +1,9 @@
 package test;
 
-import Interpreters.DependencyFileReaderFactory;
-import Interpreters.dependencyFileReader;
-import courseManager.Course;
-import courseManager.CourseManager;
+import CourseManagement.Course;
+import CourseManagement.CourseManager;
+import Interpreters.DependencyFileReaders.DependencyFileReader;
+import Interpreters.DependencyFileReaders.DependencyFileReaderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class MainTrain {
         String filePath = "C:\\Users\\yonat\\eclipse-workspace\\CourseDependency\\Table.docx";
         DependencyFileReaderFactory dependencyFileReaderFactory = new DependencyFileReaderFactory();
         logger.info("program started.");
-        dependencyFileReader dependencyFileReader = dependencyFileReaderFactory.readFileType(filePath);
+        DependencyFileReader dependencyFileReader = dependencyFileReaderFactory.readFileType(filePath);
         dependencyFileReader.readFile();
         courseManager.setSchoolType(dependencyFileReader.getSchoolType());
         courseManager.readCourseTable(dependencyFileReader.getDependenciesTable());
@@ -35,16 +35,15 @@ public class MainTrain {
         // TODO:
         // TODO: paint the graph using GraphStream Lib.
 
-        System.out.println(courseHashMap);
+//        System.out.println(courseHashMap);
         try (XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Test.xml")))) {
             Course c1 = courseHashMap.get("636016");
             Course c2 = courseHashMap.get("600093");
-
             e.writeObject(c1);
             e.writeObject(c2);
 //            e.writeObject(courseHashMap);
         } catch (IllegalArgumentException | FileNotFoundException e) {
-            logger.error("{} exception",e.toString());
+            logger.error("{} exception", e.toString());
             e.printStackTrace();
         }
 
