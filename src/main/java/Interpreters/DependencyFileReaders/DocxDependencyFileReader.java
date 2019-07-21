@@ -68,11 +68,12 @@ public class DocxDependencyFileReader extends DependencyFileReader {
                 //TODO:  schoolNamesMap.get(schoolName);
                 if (schoolName.contains("מדעי המחשב")) {
                     schoolType = CourseManager.SchoolType.COMPUTER_SCIENCE;
+                    return schoolType;
                 }
             }
         }
         logger.info("end schoolType reading");
 
-        return schoolType;
+        return null;
     }
 }

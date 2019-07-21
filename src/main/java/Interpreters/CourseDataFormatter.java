@@ -33,27 +33,38 @@ public class CourseDataFormatter {
     }
 
     public HashMap<String, Course> readHashMapFromDependencyTable() {
-
         // class for reading basic columns.
-
-        readBasicDetailsFromTable(dependenciesTable);
+        String[][] clearedTable=clearHeadersFromTable(dependenciesTable);
+        readBasicDetailsFromTable(clearedTable);
 
         // class for reading requests columns.
-        fillRequestsColumnsFromTable(dependenciesTable);
+        fillRequestsColumnsFromTable(clearedTable);
         return courseHashMap;
+    }
+
+    private String[][] clearHeadersFromTable(String[][] dependenciesTable) {
+        List<String[]> dataTableRows=new LinkedList<>();
+        for (String[] tableRow : dependenciesTable) {
+            if(tableRow[CODE_COL_NUMBER].matches("[0-9]+")){
+                dataTableRows.add(tableRow);
+            }
+        }
+        return dataTableRows.toArray(new String[0][]);
     }
 
     private void readBasicDetailsFromTable(String[][] dependenciesTable) {
         courseHashMap = new HashMap<>();
-        for (int i = 1; i < dependenciesTable.length; i++) {
-            String[] courseRow = dependenciesTable[i];
+        Arrays.stream(dependenciesTable).forEach(courseRow -> {
             List<Course> currentCourses = readBasicDetailsFromTableRow(courseRow);
-            assert currentCourses != null;
-            currentCourses.forEach(course -> {
-                courseNameHashMap.put(course.getName(), course.getCode());
-                courseHashMap.put(course.getCode(), course);
-            });
-        }
+            if (currentCourses != null) {
+                currentCourses.forEach(course -> {
+                    courseNameHashMap.put(course.getName(), course.getCode());
+                    courseHashMap.put(course.getCode(), course);
+                });
+            } else {
+                logger.error("{} courseRow is null", Arrays.toString(courseRow));
+            }
+        });
     }
 
     private List<Course> readBasicDetailsFromTableRow(String[] tableRow) {
@@ -115,6 +126,7 @@ public class CourseDataFormatter {
     private void fillRequestsColumnsFromTable(String[][] dependenciesTable) {
         for (int i = 1; i < dependenciesTable.length; i++) {
             String[] tableRow = dependenciesTable[i];
+            //TODO: Create flywight pattern for course.
             List<String> coursesCodes = getCourseDetail(tableRow, CODE_COL_NUMBER);
             List<List<Course>> coursePreRequests = readRequestsArray(tableRow[PREREQUISITE_COL_NUMBER]);
             List<List<Course>> courseParallelRequests = readRequestsArray(tableRow[PARALLELREQUESTS_COL_NUMBER]);

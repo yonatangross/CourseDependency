@@ -10,6 +10,7 @@ import java.io.File;
 public abstract class DependencyFileReader {
     final Logger logger;
     File file;
+
     CourseManager.SchoolType schoolType = null;
     String[][] dependenciesTable = null;
 
