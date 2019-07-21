@@ -1,4 +1,4 @@
-package Interpreters.DependencyFileReaders;
+package InputManager.DependencyFileReaders;
 
 //import com.giaybac.traprange.PDFTableExtractor;
 //import com.giaybac.traprange.entity.Table;
@@ -6,7 +6,6 @@ package Interpreters.DependencyFileReaders;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 
 public class PDFDependencyFileReader extends DependencyFileReader{
     PDFDependencyFileReader(File file) {

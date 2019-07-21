@@ -1,6 +1,6 @@
 package CourseManagement;
 
-import Interpreters.CourseDataFormatter;
+import InputManager.CourseDataFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package Interpreters.DependencyFileReaders;
+package InputManager.DependencyFileReaders;
 
 import CourseManagement.CourseManager;
 import org.apache.poi.xwpf.usermodel.*;

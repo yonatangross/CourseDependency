@@ -1,4 +1,4 @@
-package Interpreters;
+package InputManager;
 
 import Algorithms.StringMatchers.LevenshteinDistance;
 import Algorithms.StringMatchers.StringMatcher;
@@ -18,6 +18,7 @@ public class CourseDataFormatter {
     private static final int NAME_COL_NUMBER = 1;
     private static final int PREREQUISITE_COL_NUMBER = 2;
     private static final int PARALLELREQUESTS_COL_NUMBER = 3;
+
     private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
     private final String[][] dependenciesTable;
     private HashMap<String, String> courseNameHashMap = new HashMap<>();
@@ -26,6 +27,7 @@ public class CourseDataFormatter {
 
     public CourseDataFormatter(String[][] dependenciesTable) {
         this.dependenciesTable = dependenciesTable;
+        DependencyTableType dependencyTableType = getDependencyTableType(dependenciesTable);
     }
 
     public HashMap<String, String> getCourseNameHashMap() {
@@ -124,9 +126,7 @@ public class CourseDataFormatter {
     }
 
     private void fillRequestsColumnsFromTable(String[][] dependenciesTable) {
-        for (int i = 1; i < dependenciesTable.length; i++) {
-            String[] tableRow = dependenciesTable[i];
-            //TODO: Create flywight pattern for course.
+        Arrays.stream(dependenciesTable).forEach(tableRow -> {
             List<String> coursesCodes = getCourseDetail(tableRow, CODE_COL_NUMBER);
             List<List<Course>> coursePreRequests = readRequestsArray(tableRow[PREREQUISITE_COL_NUMBER]);
             List<List<Course>> courseParallelRequests = readRequestsArray(tableRow[PARALLELREQUESTS_COL_NUMBER]);
@@ -140,7 +140,7 @@ public class CourseDataFormatter {
                 logger.error(e.toString() + " " + e.getCause());
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     private List<List<Course>> readRequestsArray(String courseRequestsString) {
