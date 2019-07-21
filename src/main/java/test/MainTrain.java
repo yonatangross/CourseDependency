@@ -18,8 +18,8 @@ public class MainTrain {
 
         CourseManager courseManager = new CourseManager();
         DependencyFileReaderFactory dependencyFileReaderFactory = new DependencyFileReaderFactory();
-
-        String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\NewTable.docx";
+        //todo: add loading of table from resources folder.
+        String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\table.docx";
         DependencyFileReader dependencyFileReader = dependencyFileReaderFactory.readFileType(filePath);
         dependencyFileReader.readFile();
         courseManager.setSchoolType(dependencyFileReader.getSchoolType());

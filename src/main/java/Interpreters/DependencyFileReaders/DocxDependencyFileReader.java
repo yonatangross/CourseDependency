@@ -62,7 +62,7 @@ public class DocxDependencyFileReader extends DependencyFileReader {
             String[] split = text.split("\n");
             List<String> collect = Arrays.stream(split).filter(s -> s.contains("בית הספר")).collect(Collectors.toList());
             if (collect.size() != 1) {
-                System.out.println("Error parsing school name");
+                logger.error("Error parsing school name");
             } else {
                 String schoolName = collect.get(0).replace("בית ספר ל", "");
                 //TODO:  schoolNamesMap.get(schoolName);

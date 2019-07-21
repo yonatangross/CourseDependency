@@ -34,11 +34,11 @@ public class CourseDataFormatter {
 
     public HashMap<String, Course> readHashMapFromDependencyTable() {
         // class for reading basic columns.
-        String[][] clearedTable=clearHeadersFromTable(dependenciesTable);
-        readBasicDetailsFromTable(clearedTable);
+       // String[][] clearedTable=clearHeadersFromTable(dependenciesTable);
+        readBasicDetailsFromTable(dependenciesTable);
 
         // class for reading requests columns.
-        fillRequestsColumnsFromTable(clearedTable);
+        fillRequestsColumnsFromTable(dependenciesTable);
         return courseHashMap;
     }
 
@@ -54,7 +54,8 @@ public class CourseDataFormatter {
 
     private void readBasicDetailsFromTable(String[][] dependenciesTable) {
         courseHashMap = new HashMap<>();
-        Arrays.stream(dependenciesTable).forEach(courseRow -> {
+        for (int i = 1; i < dependenciesTable.length; i++) {
+            String[] courseRow = dependenciesTable[i];
             List<Course> currentCourses = readBasicDetailsFromTableRow(courseRow);
             if (currentCourses != null) {
                 currentCourses.forEach(course -> {
@@ -64,7 +65,7 @@ public class CourseDataFormatter {
             } else {
                 logger.error("{} courseRow is null", Arrays.toString(courseRow));
             }
-        });
+        }
     }
 
     private List<Course> readBasicDetailsFromTableRow(String[] tableRow) {
