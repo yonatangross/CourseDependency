@@ -1,4 +1,4 @@
-package InputManager.DependencyFileReaders;
+package TableManager.DependencyFileReaders;
 
 import CourseManagement.CourseManager;
 import org.apache.poi.xwpf.usermodel.*;
@@ -65,7 +65,7 @@ public class DocxDependencyFileReader extends DependencyFileReader {
                 System.out.println("Error parsing school name");
             } else {
                 String schoolName = collect.get(0).replace("בית ספר ל", "");
-                //TODO:  schoolNamesMap.get(schoolName);
+                //TODO:  schoolNamesMap.getTableType(schoolName);
                 if (schoolName.contains("מדעי המחשב")) {
                     schoolType = CourseManager.SchoolType.COMPUTER_SCIENCE;
                     return schoolType;

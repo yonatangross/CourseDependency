@@ -1,4 +1,4 @@
-package InputManager.DependencyFileReaders;
+package TableManager.DependencyFileReaders;
 
 
 import org.slf4j.Logger;

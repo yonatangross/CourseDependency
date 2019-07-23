@@ -1,4 +1,4 @@
-package InputManager;
+package TableManager;
 
 import Algorithms.StringMatchers.LevenshteinDistance;
 import Algorithms.StringMatchers.StringMatcher;
@@ -14,20 +14,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CourseDataFormatter {
-    private static final int CODE_COL_NUMBER = 0;
-    private static final int NAME_COL_NUMBER = 1;
-    private static final int PREREQUISITE_COL_NUMBER = 2;
-    private static final int PARALLELREQUESTS_COL_NUMBER = 3;
+
 
     private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
-    private final String[][] dependenciesTable;
+    private final String[][] dependencyTable;
     private HashMap<String, String> courseNameHashMap = new HashMap<>();
+    private TableClassifier tableClassifier;
 
     private HashMap<String, Course> courseHashMap = null;
 
-    public CourseDataFormatter(String[][] dependenciesTable) {
-        this.dependenciesTable = dependenciesTable;
-        DependencyTableType dependencyTableType = getDependencyTableType(dependenciesTable);
+    public CourseDataFormatter(String[][] dependencyTable) {
+        this.dependencyTable = dependencyTable;
+        tableClassifier = new TableClassifier(dependencyTable);
     }
 
     public HashMap<String, String> getCourseNameHashMap() {
@@ -36,7 +34,7 @@ public class CourseDataFormatter {
 
     public HashMap<String, Course> readHashMapFromDependencyTable() {
         // class for reading basic columns.
-        String[][] clearedTable=clearHeadersFromTable(dependenciesTable);
+        String[][] clearedTable = clearHeadersFromTable(dependencyTable);
         readBasicDetailsFromTable(clearedTable);
 
         // class for reading requests columns.
@@ -45,9 +43,9 @@ public class CourseDataFormatter {
     }
 
     private String[][] clearHeadersFromTable(String[][] dependenciesTable) {
-        List<String[]> dataTableRows=new LinkedList<>();
+        List<String[]> dataTableRows = new LinkedList<>();
         for (String[] tableRow : dependenciesTable) {
-            if(tableRow[CODE_COL_NUMBER].matches("[0-9]+")){
+            if (tableRow[tableClassifier.getColumnNumber(TableColumn.CODE)].matches("[0-9]+")) {
                 dataTableRows.add(tableRow);
             }
         }
@@ -72,8 +70,8 @@ public class CourseDataFormatter {
     private List<Course> readBasicDetailsFromTableRow(String[] tableRow) {
         List<Course> rowCourses = new LinkedList<>();
         try {
-            List<String> codes = getCourseDetail(tableRow, CODE_COL_NUMBER);
-            List<String> names = getCourseDetail(tableRow, NAME_COL_NUMBER);
+            List<String> codes = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.CODE));
+            List<String> names = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.NAME));
             if (codes.size() != names.size()) {
                 List<String> fixedNames = getFixedNames(codes, names);
                 addCoursesInRow(rowCourses, codes, fixedNames);
@@ -127,9 +125,9 @@ public class CourseDataFormatter {
 
     private void fillRequestsColumnsFromTable(String[][] dependenciesTable) {
         Arrays.stream(dependenciesTable).forEach(tableRow -> {
-            List<String> coursesCodes = getCourseDetail(tableRow, CODE_COL_NUMBER);
-            List<List<Course>> coursePreRequests = readRequestsArray(tableRow[PREREQUISITE_COL_NUMBER]);
-            List<List<Course>> courseParallelRequests = readRequestsArray(tableRow[PARALLELREQUESTS_COL_NUMBER]);
+            List<String> coursesCodes = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.CODE));
+            List<List<Course>> coursePreRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PRE_REQUISITE)]);
+            List<List<Course>> courseParallelRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PARALLEL_REQUESTS)]);
             try {
                 for (String courseCode : coursesCodes) {
                     Course course = courseHashMap.get(courseCode);

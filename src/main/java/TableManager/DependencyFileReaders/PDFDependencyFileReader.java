@@ -1,4 +1,4 @@
-package InputManager.DependencyFileReaders;
+package TableManager.DependencyFileReaders;
 
 //import com.giaybac.traprange.PDFTableExtractor;
 //import com.giaybac.traprange.entity.Table;
@@ -21,7 +21,7 @@ public class PDFDependencyFileReader extends DependencyFileReader{
 //            PDFTableExtractor extractor = new PDFTableExtractor();
 //            List<Table> tables = extractor.setSource(file)
 //                    .extract();
-//            String html = tables.get(0).toString();//table in html format
+//            String html = tables.getTableType(0).toString();//table in html format
 
 
 
