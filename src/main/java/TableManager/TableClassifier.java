@@ -40,6 +40,10 @@ public class TableClassifier {
             logger.error("Unhandled table type.");
     }
 
+    boolean hasRequests() {
+        return (tableType == TableType.PRE_AND_PARALLEL || tableType == TableType.PRE_PARA_HEARING);
+    }
+
     public TableDirection getTableDirection() {
         return this.tableDirection;
     }

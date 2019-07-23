@@ -19,7 +19,7 @@ public class MainTrain {
         CourseManager courseManager = new CourseManager();
         DependencyFileReaderFactory dependencyFileReaderFactory = new DependencyFileReaderFactory();
 
-        String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\Table.docx";
+        String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\NewTable.docx";
         DependencyFileReader dependencyFileReader = dependencyFileReaderFactory.readFileType(filePath);
         dependencyFileReader.readFile();
         courseManager.setSchoolType(dependencyFileReader.getSchoolType());
@@ -30,7 +30,7 @@ public class MainTrain {
 
         // TODO: move from hashMap to graph and use topological sort
         // TODO: paint the graph using GraphStream Lib.
-//        System.out.println(courseHashMap);
+        logger.info("{}",courseHashMap.toString());
      /*   try (XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Test.xml")))) {
             Course c1 = courseHashMap.getTableType("636016");
             Course c2 = courseHashMap.getTableType("600093");

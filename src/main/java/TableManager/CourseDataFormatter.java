@@ -18,7 +18,6 @@ public class CourseDataFormatter {
 
     private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
     private final String[][] dependencyTable;
-    private final int COURSE_CODE_LENGTH = 6;
     private HashMap<String, String> courseNameHashMap = new HashMap<>();
     private TableClassifier tableClassifier;
     private HashMap<String, Course> courseHashMap = null;
@@ -38,7 +37,9 @@ public class CourseDataFormatter {
         readBasicDetailsFromTable(clearedTable);
 
         // class for reading requests columns.
-        fillRequestsColumnsFromTable(clearedTable);
+        if (tableClassifier.getTableType() == TableType.PRE_AND_PARALLEL ||
+                tableClassifier.getTableType() == TableType.PRE_PARA_HEARING)
+            fillRequestsColumnsFromTable(clearedTable);
         return courseHashMap;
     }
 
@@ -56,6 +57,7 @@ public class CourseDataFormatter {
     }
 
     private boolean ContainsCode(String codeString) {
+        final int COURSE_CODE_LENGTH = 6;
         int count = 0;
         for (int i = 0, len = codeString.length(); i < len && count < COURSE_CODE_LENGTH; i++) {
             if (Character.isDigit(codeString.charAt(i))) {
@@ -139,28 +141,47 @@ public class CourseDataFormatter {
     private void fillRequestsColumnsFromTable(String[][] dependenciesTable) {
         Arrays.stream(dependenciesTable).forEach(tableRow -> {
             List<String> coursesCodes = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.CODE));
-            List<List<Course>> coursePreRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PRE_REQUISITE)]);
-            List<List<Course>> courseParallelRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PARALLEL_REQUESTS)]);
-            try {
-                for (String courseCode : coursesCodes) {
-                    Course course = courseHashMap.get(courseCode);
-                    course.setCoursePrerequisites(coursePreRequests);
-                    course.setCourseParallelRequests(courseParallelRequests);
+            if (tableClassifier.hasRequests()) {
+                List<List<Course>> prerequisites = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PRE_REQUESTS)]);
+                List<List<Course>> parallelRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PARALLEL_REQUESTS)]);
+                List<List<Course>> hearRequests = null;
+                if (tableClassifier.getTableType() == TableType.PRE_PARA_HEARING) {
+                    hearRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.HEAR_REQUESTS)]);
                 }
-            } catch (NullPointerException e) {
-                logger.error(e.toString() + " " + e.getCause());
-                e.printStackTrace();
+                try {
+                    for (String courseCode : coursesCodes) {
+                        Course course = courseHashMap.get(courseCode);
+                        if (tableClassifier.hasRequests()) {
+                            course.setPrerequisites(prerequisites);
+                            course.setParallelRequests(parallelRequests);
+                            if (hearRequests != null) {
+                                course.setHearRequests(hearRequests);
+                            }
+                        }
+                    }
+                } catch (NullPointerException e) {
+                    logger.error(e.toString() + " " + e.getCause());
+                    e.printStackTrace();
+                }
             }
+
+
         });
     }
 
     private List<List<Course>> readRequestsArray(String courseRequestsString) {
         String cleanRequests = cleanErrors(courseRequestsString); // remove empty lines and leading/ending spaces.
-        if (cleanRequests.contentEquals("-------------------"))
+        if (emptyRequests(cleanRequests))
             return null;
         List<List<String>> courseRequests = parseRequestsList(cleanRequests);
 
         return getCourseRequestsList(courseRequests);
+    }
+
+    private boolean emptyRequests(String cleanRequests) {
+        String emptyString = "--";
+
+        return cleanRequests.contains(emptyString);
     }
 
     private List<List<Course>> getCourseRequestsList(List<List<String>> courseRequests) {
