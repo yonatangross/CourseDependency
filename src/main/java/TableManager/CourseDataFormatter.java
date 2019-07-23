@@ -18,9 +18,9 @@ public class CourseDataFormatter {
 
     private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
     private final String[][] dependencyTable;
+    private final int COURSE_CODE_LENGTH = 6;
     private HashMap<String, String> courseNameHashMap = new HashMap<>();
     private TableClassifier tableClassifier;
-
     private HashMap<String, Course> courseHashMap = null;
 
     public CourseDataFormatter(String[][] dependencyTable) {
@@ -45,11 +45,24 @@ public class CourseDataFormatter {
     private String[][] clearHeadersFromTable(String[][] dependenciesTable) {
         List<String[]> dataTableRows = new LinkedList<>();
         for (String[] tableRow : dependenciesTable) {
-            if (tableRow[tableClassifier.getColumnNumber(TableColumn.CODE)].matches("[0-9]+")) {
+            boolean cellWithCode = ContainsCode(tableRow[tableClassifier.getColumnNumber(TableColumn.CODE)]);
+            if (cellWithCode) {
                 dataTableRows.add(tableRow);
+            } else {
+                logger.info("Removed {} with code: {}", tableRow[tableClassifier.getColumnNumber(TableColumn.NAME)], tableRow[tableClassifier.getColumnNumber(TableColumn.CODE)]);
             }
         }
         return dataTableRows.toArray(new String[0][]);
+    }
+
+    private boolean ContainsCode(String codeString) {
+        int count = 0;
+        for (int i = 0, len = codeString.length(); i < len && count < COURSE_CODE_LENGTH; i++) {
+            if (Character.isDigit(codeString.charAt(i))) {
+                count++;
+            }
+        }
+        return count == COURSE_CODE_LENGTH;
     }
 
     private void readBasicDetailsFromTable(String[][] dependenciesTable) {
