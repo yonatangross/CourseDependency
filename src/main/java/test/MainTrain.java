@@ -2,8 +2,8 @@ package test;
 
 import CourseManagement.Course;
 import CourseManagement.CourseManager;
-import Interpreters.DependencyFileReaders.DependencyFileReader;
-import Interpreters.DependencyFileReaders.DependencyFileReaderFactory;
+import TableManager.DependencyFileReaders.DependencyFileReader;
+import TableManager.DependencyFileReaders.DependencyFileReaderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +18,13 @@ public class MainTrain {
 
         CourseManager courseManager = new CourseManager();
         DependencyFileReaderFactory dependencyFileReaderFactory = new DependencyFileReaderFactory();
+<<<<<<< HEAD
         //todo: add loading of table from resources folder.
         String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\table.docx";
+=======
+
+        String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\Table.docx";
+>>>>>>> development
         DependencyFileReader dependencyFileReader = dependencyFileReaderFactory.readFileType(filePath);
         dependencyFileReader.readFile();
         courseManager.setSchoolType(dependencyFileReader.getSchoolType());
@@ -32,8 +37,8 @@ public class MainTrain {
         // TODO: paint the graph using GraphStream Lib.
 //        System.out.println(courseHashMap);
      /*   try (XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Test.xml")))) {
-            Course c1 = courseHashMap.get("636016");
-            Course c2 = courseHashMap.get("600093");
+            Course c1 = courseHashMap.getTableType("636016");
+            Course c2 = courseHashMap.getTableType("600093");
             e.writeObject(c1);
             e.writeObject(c2);
 //            e.writeObject(courseHashMap);

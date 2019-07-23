@@ -1,4 +1,4 @@
-package Interpreters.DependencyFileReaders;
+package TableManager.DependencyFileReaders;
 
 import CourseManagement.CourseManager;
 import org.slf4j.Logger;

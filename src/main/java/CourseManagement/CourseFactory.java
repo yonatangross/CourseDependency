@@ -5,8 +5,8 @@ import java.util.HashMap;
 public class CourseFactory {
     private static HashMap<String,Course> courseHashMap=new HashMap<>();
 
-    // Method to get a player
-    public static Course getPlayer(String type)
+    // Method to getTableType a player
+    public static Course getCourse(String type)
     {
         Course course = null;
 

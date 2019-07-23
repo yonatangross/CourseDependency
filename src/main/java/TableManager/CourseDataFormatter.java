@@ -1,4 +1,4 @@
-package Interpreters;
+package TableManager;
 
 import Algorithms.StringMatchers.LevenshteinDistance;
 import Algorithms.StringMatchers.StringMatcher;
@@ -14,18 +14,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CourseDataFormatter {
-    private static final int CODE_COL_NUMBER = 0;
-    private static final int NAME_COL_NUMBER = 1;
-    private static final int PREREQUISITE_COL_NUMBER = 2;
-    private static final int PARALLELREQUESTS_COL_NUMBER = 3;
-    private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
-    private final String[][] dependenciesTable;
-    private HashMap<String, String> courseNameHashMap = new HashMap<>();
 
+
+    private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
+    private final String[][] dependencyTable;
+    private final int COURSE_CODE_LENGTH = 6;
+    private HashMap<String, String> courseNameHashMap = new HashMap<>();
+    private TableClassifier tableClassifier;
     private HashMap<String, Course> courseHashMap = null;
 
-    public CourseDataFormatter(String[][] dependenciesTable) {
-        this.dependenciesTable = dependenciesTable;
+    public CourseDataFormatter(String[][] dependencyTable) {
+        this.dependencyTable = dependencyTable;
+        tableClassifier = new TableClassifier(dependencyTable);
     }
 
     public HashMap<String, String> getCourseNameHashMap() {
@@ -34,8 +34,13 @@ public class CourseDataFormatter {
 
     public HashMap<String, Course> readHashMapFromDependencyTable() {
         // class for reading basic columns.
+<<<<<<< HEAD:src/main/java/Interpreters/CourseDataFormatter.java
        // String[][] clearedTable=clearHeadersFromTable(dependenciesTable);
         readBasicDetailsFromTable(dependenciesTable);
+=======
+        String[][] clearedTable = clearHeadersFromTable(dependencyTable);
+        readBasicDetailsFromTable(clearedTable);
+>>>>>>> development:src/main/java/TableManager/CourseDataFormatter.java
 
         // class for reading requests columns.
         fillRequestsColumnsFromTable(dependenciesTable);
@@ -43,13 +48,26 @@ public class CourseDataFormatter {
     }
 
     private String[][] clearHeadersFromTable(String[][] dependenciesTable) {
-        List<String[]> dataTableRows=new LinkedList<>();
+        List<String[]> dataTableRows = new LinkedList<>();
         for (String[] tableRow : dependenciesTable) {
-            if(tableRow[CODE_COL_NUMBER].matches("[0-9]+")){
+            boolean cellWithCode = ContainsCode(tableRow[tableClassifier.getColumnNumber(TableColumn.CODE)]);
+            if (cellWithCode) {
                 dataTableRows.add(tableRow);
+            } else {
+                logger.info("Removed {} with code: {}", tableRow[tableClassifier.getColumnNumber(TableColumn.NAME)], tableRow[tableClassifier.getColumnNumber(TableColumn.CODE)]);
             }
         }
         return dataTableRows.toArray(new String[0][]);
+    }
+
+    private boolean ContainsCode(String codeString) {
+        int count = 0;
+        for (int i = 0, len = codeString.length(); i < len && count < COURSE_CODE_LENGTH; i++) {
+            if (Character.isDigit(codeString.charAt(i))) {
+                count++;
+            }
+        }
+        return count == COURSE_CODE_LENGTH;
     }
 
     private void readBasicDetailsFromTable(String[][] dependenciesTable) {
@@ -71,8 +89,8 @@ public class CourseDataFormatter {
     private List<Course> readBasicDetailsFromTableRow(String[] tableRow) {
         List<Course> rowCourses = new LinkedList<>();
         try {
-            List<String> codes = getCourseDetail(tableRow, CODE_COL_NUMBER);
-            List<String> names = getCourseDetail(tableRow, NAME_COL_NUMBER);
+            List<String> codes = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.CODE));
+            List<String> names = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.NAME));
             if (codes.size() != names.size()) {
                 List<String> fixedNames = getFixedNames(codes, names);
                 addCoursesInRow(rowCourses, codes, fixedNames);
@@ -125,12 +143,10 @@ public class CourseDataFormatter {
     }
 
     private void fillRequestsColumnsFromTable(String[][] dependenciesTable) {
-        for (int i = 1; i < dependenciesTable.length; i++) {
-            String[] tableRow = dependenciesTable[i];
-            //TODO: Create flywight pattern for course.
-            List<String> coursesCodes = getCourseDetail(tableRow, CODE_COL_NUMBER);
-            List<List<Course>> coursePreRequests = readRequestsArray(tableRow[PREREQUISITE_COL_NUMBER]);
-            List<List<Course>> courseParallelRequests = readRequestsArray(tableRow[PARALLELREQUESTS_COL_NUMBER]);
+        Arrays.stream(dependenciesTable).forEach(tableRow -> {
+            List<String> coursesCodes = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.CODE));
+            List<List<Course>> coursePreRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PRE_REQUISITE)]);
+            List<List<Course>> courseParallelRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PARALLEL_REQUESTS)]);
             try {
                 for (String courseCode : coursesCodes) {
                     Course course = courseHashMap.get(courseCode);
@@ -141,7 +157,7 @@ public class CourseDataFormatter {
                 logger.error(e.toString() + " " + e.getCause());
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     private List<List<Course>> readRequestsArray(String courseRequestsString) {
