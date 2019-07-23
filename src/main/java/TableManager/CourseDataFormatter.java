@@ -154,7 +154,7 @@ public class CourseDataFormatter {
                         if (tableClassifier.hasRequests()) {
                             course.setPrerequisites(prerequisites);
                             course.setParallelRequests(parallelRequests);
-                            if (hearRequests != null) {
+                            if (hearRequests != null && hearRequests.size() > 0) {
                                 course.setHearRequests(hearRequests);
                             }
                         }
@@ -278,7 +278,7 @@ public class CourseDataFormatter {
 
     }
 
-    //תכנות אלגוריתמי ב- java  או	פתוח תכנה מתקדם II
+    //תכנות אלגוריתמי ב- java
     private List<List<String>> parseRequestsList(String cleanRequests) {
         String[] splitWordsArray = {" או ", "/", " או\t", "\\n", "\\t", ",", "."};
         LinkedList<List<String>> courseRequests = new LinkedList<>();

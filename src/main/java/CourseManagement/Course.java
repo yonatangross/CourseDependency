@@ -1,6 +1,5 @@
 package CourseManagement;
 
-import TableManager.TableClassifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,25 +68,40 @@ public class Course implements Serializable {
                 "name='" + name + '\'' +
                 ", code='" + code + '\'';
 
+       /* Field[] fields = getClass().getDeclaredFields();
+        List<Field> listFields = new LinkedList<>();
+        for (Field field : fields) {
+            if (field.getType() == java.util.List.class) {
+                listFields.add(field);
+            }
+        }
 
-    /*    StringBuilder stringBuilder = null;
+        for (Field listField : listFields) {
+
+        }
+*/
+        StringBuilder stringBuilder = null;
         try {
             stringBuilder = new StringBuilder(courseBase);
             if (prerequisites != null) {
-                stringBuilder.append(prerequisites.toString());
+                String prerequisitesString = prerequisites.toString();
+                System.out.println("prerequisitesString = " + prerequisitesString);
+                stringBuilder.append(prerequisitesString);
             }
             if (parallelRequests != null) {
                 stringBuilder.append(parallelRequests.toString());
             }
-            if (hearRequests != null) {
-                stringBuilder.append(hearRequests.toString());
-            }
+          /*  if (hearRequests != null) {
+                String hearRequestsString= hearRequests.toString();
+                stringBuilder.append(hearRequestsString);
+            }*/
         } catch (Exception e) {
-            logger.
+            logger.error("exception while printing {}.", this.getName());
             e.printStackTrace();
         }
 
-        return stringBuilder.toString();*/
-    return courseBase;
+        assert stringBuilder != null;
+        return stringBuilder.toString();
+//        return courseBase;
     }
 }
