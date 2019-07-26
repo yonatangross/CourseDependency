@@ -2,24 +2,25 @@ package test;
 
 import CourseManagement.Course;
 import CourseManagement.CourseManager;
+import GraphManager.CourseGraph;
 import TableManager.DependencyFileReaders.DependencyFileReader;
 import TableManager.DependencyFileReaders.DependencyFileReaderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class MainTrain {
 
     public static void main(String[] args) {
-        //logger = LoggerFactory.getLogger(MainTrain.class);
         Logger logger = LoggerFactory.getLogger(MainTrain.class);
         logger.info("program started.");
 
         CourseManager courseManager = new CourseManager();
         DependencyFileReaderFactory dependencyFileReaderFactory = new DependencyFileReaderFactory();
 
-        String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\NewTable.docx";
+        String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\table.docx";
         DependencyFileReader dependencyFileReader = dependencyFileReaderFactory.readFileType(filePath);
         dependencyFileReader.readFile();
         courseManager.setSchoolType(dependencyFileReader.getSchoolType());
@@ -27,10 +28,13 @@ public class MainTrain {
         HashMap<String, Course> courseHashMap = courseManager.getCourseHashMap();
 
 
+        CourseGraph courseGraph= new CourseGraph(courseHashMap.values());
+
+
+
 
         // TODO: move from hashMap to graph and use topological sort
         // TODO: paint the graph using GraphStream Lib.
-        logger.info("{}",courseHashMap.toString());
      /*   try (XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Test.xml")))) {
             Course c1 = courseHashMap.getTableType("636016");
             Course c2 = courseHashMap.getTableType("600093");

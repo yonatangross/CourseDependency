@@ -83,24 +83,23 @@ public class Course implements Serializable {
         StringBuilder stringBuilder = null;
         try {
             stringBuilder = new StringBuilder(courseBase);
-            if (prerequisites != null) {
-                String prerequisitesString = prerequisites.toString();
-                System.out.println("prerequisitesString = " + prerequisitesString);
-                stringBuilder.append(prerequisitesString);
-            }
-            if (parallelRequests != null) {
+            if (prerequisites != null && prerequisites.size() != 0){
+                    stringBuilder.append(prerequisites.toString());
+                }
+            if (parallelRequests != null && parallelRequests.size() != 0) {
                 stringBuilder.append(parallelRequests.toString());
             }
-          /*  if (hearRequests != null) {
-                String hearRequestsString= hearRequests.toString();
-                stringBuilder.append(hearRequestsString);
-            }*/
+            if (hearRequests != null && hearRequests.size() != 0) {
+                stringBuilder.append(hearRequests.toString());
+            }
         } catch (Exception e) {
             logger.error("exception while printing {}.", this.getName());
             e.printStackTrace();
         }
 
-        assert stringBuilder != null;
+        if (stringBuilder == null) {
+            logger.error("{} stringBuilder is null", this.getName());
+        }
         return stringBuilder.toString();
 //        return courseBase;
     }

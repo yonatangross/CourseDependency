@@ -1,6 +1,6 @@
 package TableManager;
 
-enum TableColumn {
+public enum TableColumn {
     CODE(0),
     NAME(1),
     PRE_REQUESTS(2),
