@@ -1,4 +1,4 @@
-package TableManager;
+package input.dependencyTable;
 
 public enum TableColumn {
     CODE(0),

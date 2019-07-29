@@ -1,8 +1,8 @@
-package utils;
+package input.dependencyTable.tableClassifier;
 
-import TableManager.TableColumn;
-import TableManager.TableDirection;
-import TableManager.TableType;
+import input.dependencyTable.TableColumn;
+import input.dependencyTable.TableDirection;
+import input.dependencyTable.TableType;
 
 public interface TableClassifier {
 

@@ -1,4 +1,4 @@
-package GraphManager;
+package business.graph;
 
 public interface Graph<V> {
     int getNumVertices();

@@ -1,4 +1,6 @@
-package CourseManagement;
+package business.courseManagement;
+
+import business.entity.Course;
 
 import java.util.HashMap;
 

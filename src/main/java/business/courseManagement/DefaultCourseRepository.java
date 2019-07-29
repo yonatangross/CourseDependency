@@ -1,15 +1,17 @@
-package CourseManagement;
+package business.courseManagement;
 
-import TableManager.CourseDataFormatter;
+import business.entity.Course;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
-public class CourseManager {
+public class DefaultCourseRepository implements CourseRepository {
 
-    private final Logger logger = LoggerFactory.getLogger(CourseManager.class);
+    private final Logger logger = LoggerFactory.getLogger(DefaultCourseRepository.class);
     private HashMap<String, Course> courseHashMap = new HashMap<>();
+    //TODO: remove or move to other class single responsibility is invalid.
+    //TODO: maybe split to clientHandler and courseRepository or something.
     private HashMap<String, String> courseNameHashMap = new HashMap<>();
     private SchoolType schoolType;
 

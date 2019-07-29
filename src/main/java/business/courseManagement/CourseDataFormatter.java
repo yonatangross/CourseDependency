@@ -1,12 +1,15 @@
-package TableManager;
+package business.courseManagement;
 
-import Algorithms.StringMatchers.LevenshteinDistance;
-import Algorithms.StringMatchers.StringMatcher;
-import Algorithms.StringMatchers.WordLevenshteinDistance;
-import CourseManagement.Course;
+import business.algorithms.stringMatchers.LevenshteinDistance;
+import business.algorithms.stringMatchers.StringMatcher;
+import business.algorithms.stringMatchers.WordLevenshteinDistance;
+import business.entity.Course;
+import input.dependencyTable.TableColumn;
+import input.dependencyTable.TableType;
+import input.dependencyTable.tableClassifier.dependencyTableClassifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.TableClassifier;
+import input.dependencyTable.tableClassifier.TableClassifier;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,8 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CourseDataFormatter {
-
-
     private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
     private final String[][] dependencyTable;
     private HashMap<String, String> courseNameHashMap = new HashMap<>();
@@ -299,6 +300,7 @@ public class CourseDataFormatter {
         while (requestListIndex < requestsList.size()) {
             String requestString = requestsList.get(requestListIndex);
             LinkedList<String> currentRequestList = new LinkedList<>();
+            //TODO: move seperators to map.
             if (requestString.contains("/") || requestString.contains(" או ")) {
                 currentRequestList = new LinkedList<>(Arrays.asList(requestString.split("/|( או )")));
                 currentRequestList.replaceAll(String::trim);

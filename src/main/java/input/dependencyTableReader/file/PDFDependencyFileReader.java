@@ -1,7 +1,7 @@
-package TableManager.DependencyFileReaders;
+package input.dependencyTableReader.file;
 
 //import com.giaybac.traprange.PDFTableExtractor;
-//import com.giaybac.traprange.entity.Table;
+//import com.giaybac.traprange.business.entity.Table;
 
 import java.io.File;
 import java.io.FileInputStream;

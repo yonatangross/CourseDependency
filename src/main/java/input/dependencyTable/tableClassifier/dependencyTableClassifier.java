@@ -1,8 +1,10 @@
-package TableManager;
+package input.dependencyTable.tableClassifier;
 
+import input.dependencyTable.TableColumn;
+import input.dependencyTable.TableDirection;
+import input.dependencyTable.TableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.TableClassifier;
 
 public class dependencyTableClassifier implements TableClassifier {
 
@@ -10,7 +12,7 @@ public class dependencyTableClassifier implements TableClassifier {
     private TableDirection tableDirection;
     private TableType tableType;
 
-    dependencyTableClassifier(String[][] dependenciesTable) {
+    public dependencyTableClassifier(String[][] dependenciesTable) {
         final int FIRST_DATA_ROW = 1;
         calculateTableDirection(dependenciesTable[FIRST_DATA_ROW]);
         setTableType(dependenciesTable[FIRST_DATA_ROW].length);

@@ -1,6 +1,6 @@
-package GraphManager;
+package business.graph;
 
-import CourseManagement.Course;
+import business.entity.Course;
 
 import java.util.*;
 
@@ -16,7 +16,7 @@ public class CourseGraph implements Iterable, Graph<Course> {
 
     private void buildGraph(Collection<Course> courses) {
         for (Course course : courses) {
-
+        
         }
     }
 

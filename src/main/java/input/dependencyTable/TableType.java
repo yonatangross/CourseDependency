@@ -1,4 +1,4 @@
-package TableManager;
+package input.dependencyTable;
 
 import java.util.HashMap;
 import java.util.Map;

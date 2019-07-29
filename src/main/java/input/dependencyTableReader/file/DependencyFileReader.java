@@ -1,17 +1,17 @@
-package TableManager.DependencyFileReaders;
+package input.dependencyTableReader.file;
 
-import CourseManagement.CourseManager;
+import business.courseManagement.DefaultCourseRepository;
+import input.dependencyTableReader.DependencyReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-
-public abstract class DependencyFileReader {
+public abstract class DependencyFileReader implements DependencyReader {
     final Logger logger;
     File file;
 
-    CourseManager.SchoolType schoolType = null;
+    DefaultCourseRepository.SchoolType schoolType = null;
     String[][] dependenciesTable = null;
 
     DependencyFileReader(File file) {
@@ -19,7 +19,7 @@ public abstract class DependencyFileReader {
         logger = LoggerFactory.getLogger(getClass());
     }
 
-    public CourseManager.SchoolType getSchoolType() {
+    public DefaultCourseRepository.SchoolType getSchoolType() {
         return schoolType;
     }
 

@@ -1,4 +1,4 @@
-package Algorithms.StringMatchers;
+package business.algorithms.stringMatchers;
 
 import java.util.Arrays;
 
