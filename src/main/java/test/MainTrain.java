@@ -20,7 +20,7 @@ public class MainTrain {
         CourseRepository defaultCourseRepository = new DefaultCourseRepository();
         DependencyFileReaderFactory dependencyFileReaderFactory = new DependencyFileReaderFactory();
 
-        String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\Table.docx";
+        String filePath = "C:\\Users\\yonat\\Documents\\CourseDependency\\src\\main\\resources\\tables\\NewTable.docx";
         //TODO: change to generic reader(file/DB)...
         DependencyFileReader dependencyFileReader = dependencyFileReaderFactory.readFileType(filePath);
         dependencyFileReader.readFile();

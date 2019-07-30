@@ -1,4 +1,4 @@
-package business.courseManagement;
+package business.courseManagement.courseFormating;
 
 import business.algorithms.stringMatchers.LevenshteinDistance;
 import business.algorithms.stringMatchers.StringMatcher;
@@ -6,10 +6,10 @@ import business.algorithms.stringMatchers.WordLevenshteinDistance;
 import business.entity.Course;
 import input.dependencyTable.TableColumn;
 import input.dependencyTable.TableType;
+import input.dependencyTable.tableClassifier.TableClassifier;
 import input.dependencyTable.tableClassifier.dependencyTableClassifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import input.dependencyTable.tableClassifier.TableClassifier;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +22,7 @@ public class CourseDataFormatter {
     private final String[][] dependencyTable;
     private HashMap<String, String> courseNameHashMap = new HashMap<>();
     private TableClassifier dependencyTableClassifier;
+    private ClosestCourseRepository closestCourseRepository = new ClosestCourseRepository();
     private HashMap<String, Course> courseHashMap = null;
     //TODO: connect to DB and check for synonymous words
 
@@ -43,6 +44,7 @@ public class CourseDataFormatter {
         if (dependencyTableClassifier.getTableType() == TableType.PRE_AND_PARALLEL ||
                 dependencyTableClassifier.getTableType() == TableType.PRE_PARA_HEARING)
             fillRequestsColumnsFromTable(clearedTable);
+        logger.debug("{}", ClosestCourseRepository.mapToString(closestCourseRepository.correctionCourseNameMap));
         return courseHashMap;
     }
 
@@ -208,15 +210,16 @@ public class CourseDataFormatter {
     private String getClosestCourseName(String courseRequestString) {
         String courseCode;
         String closestCourseName = findClosestCourseName(courseRequestString);
+        closestCourseRepository.correctionCourseNameMap.put(courseRequestString, closestCourseName);
+
         courseCode = courseNameHashMap.get(closestCourseName);
         return courseCode;
     }
 
+    //TODO: not good for short words(פת"מ 1)
     private String findClosestCourseName(String courseRequestString) {
-        /*TODO: not good for short words(פת"מ 1)
-         *  MIN_THRESHOLD_WORD_CHECKER should be by according to the word's length.
+        /*TODO: MIN_THRESHOLD_WORD_CHECKER should be by according to the word's length.
          *  maybe numOfEquals should be inside the calculation.
-         *
          */
         StringMatcher lettersStringMatcher = new LevenshteinDistance();
         StringMatcher wordStringMatcher = new WordLevenshteinDistance();
@@ -229,15 +232,18 @@ public class CourseDataFormatter {
 
         for (String courseName : courseNameHashMap.keySet()) {
             int currentDistance = lettersStringMatcher.calculate(courseRequestString, courseName);
+            int numOfEquals = getNumberOfEqualWords(courseRequestString, courseName);
+            //TODO: courseRequestString.contains("הנדסת תוכנה מוכוונת עצמים") returns null from function.
             if (currentDistance <= thresholdToWordChecking) { // inconsistent course description
                 if (currentDistance < minDistance) { // update
-                    closestCourseName = courseName;
-                    minDistance = currentDistance;
+                    if (numOfEquals > 1) {
+                        closestCourseName = courseName;
+                        minDistance = currentDistance;
+                    }
                 }
             } else { //distance is too big for spelling error.
                 int wordsCurrentDistance = wordStringMatcher.calculate(courseRequestString, courseName);
                 if (wordsCurrentDistance < minDistanceWords) {
-                    int numOfEquals = getNumberOfEqualWords(courseRequestString, courseName);
                     if (numOfEquals > 1) { // at least 2 words are the same. => common grounds.
                         closestCourseNameWords = courseName;
                         minDistanceWords = wordsCurrentDistance;
