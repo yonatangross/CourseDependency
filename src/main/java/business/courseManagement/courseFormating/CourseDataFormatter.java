@@ -236,7 +236,7 @@ public class CourseDataFormatter {
             //TODO: courseRequestString.contains("הנדסת תוכנה מוכוונת עצמים") returns null from function.
             if (currentDistance <= thresholdToWordChecking) { // inconsistent course description
                 if (currentDistance < minDistance) { // update
-                    if (numOfEquals > 1) {
+                    if (numOfEquals >= 1) {
                         closestCourseName = courseName;
                         minDistance = currentDistance;
                     }

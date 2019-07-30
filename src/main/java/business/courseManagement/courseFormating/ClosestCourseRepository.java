@@ -13,9 +13,11 @@ public class ClosestCourseRepository {
         return map.entrySet()
                 .stream()
                 .map(
-                        entry -> "\n" + (entry.getKey() == map ? "(this Map)" : entry.getKey())
-                                + " :\n"
-                                + (entry.getValue() == map ? "(this Map)" : entry.getValue()) + "\n")
+                        entry -> {
+                            return "\n" + (entry.getKey() == map ? "(this Map)" : entry.getKey())
+                                    + " :\n"
+                                    + (entry.getValue() == map ? "(this Map)" : entry.getValue()) + "\n";
+                        })
                 .collect(Collectors.joining(", ", "{", "}"));
     }
 
