@@ -17,7 +17,11 @@
         </layout>
     </appender>
     <root>
+<<<<<<< HEAD
         <level value="debug"/>
+=======
+        <level value="DEBUG"/>
+>>>>>>> generic-dependency-format
         <appender-ref ref="consoleAppender"/>
         <appender-ref ref="file"/>
     </root>

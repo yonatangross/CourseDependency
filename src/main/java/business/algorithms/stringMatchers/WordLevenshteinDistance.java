@@ -1,18 +1,21 @@
-package Algorithms.StringMatchers;
+package business.algorithms.stringMatchers;
 
 import java.util.Arrays;
 
-public class WordLevenshteinDistance implements StringMatcher {
-    private int costOfSubstitution(String a, String b) {
+public final class WordLevenshteinDistance implements StringMatcher {
+    private  WordLevenshteinDistance() {
+    }
+
+    private static int costOfSubstitution(String a, String b) {
         return a.equals(b) ? 0 : 1;
     }
 
-    private int min(int... numbers) {
+    private static int min(int... numbers) {
         return Arrays.stream(numbers)
                 .min().orElse(Integer.MAX_VALUE);
     }
 
-    public int calculate(String xString, String yString) {
+    public static int calculate(String xString, String yString) {
         String[] xArr = xString.split(" ");
         String[] yArr = yString.split(" ");
 

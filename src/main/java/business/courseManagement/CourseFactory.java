@@ -1,9 +1,11 @@
-package CourseManagement;
+package business.courseManagement;
+
+import business.entity.Course;
 
 import java.util.HashMap;
 
 public class CourseFactory {
-    private static HashMap<String,Course> courseHashMap=new HashMap<>();
+    private static HashMap<String, Course> courseHashMap=new HashMap<>();
 
     // Method to getTableType a player
     public static Course getCourse(String type)

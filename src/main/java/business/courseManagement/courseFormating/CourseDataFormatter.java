@@ -1,9 +1,13 @@
-package TableManager;
+package business.courseManagement.courseFormating;
 
-import Algorithms.StringMatchers.LevenshteinDistance;
-import Algorithms.StringMatchers.StringMatcher;
-import Algorithms.StringMatchers.WordLevenshteinDistance;
-import CourseManagement.Course;
+import business.algorithms.stringMatchers.LevenshteinDistance;
+import business.algorithms.stringMatchers.WordLevenshteinDistance;
+import business.entity.Course;
+import business.util.UtilityPrinting;
+import input.dependencyTable.TableColumn;
+import input.dependencyTable.TableType;
+import input.dependencyTable.tableClassifier.TableClassifier;
+import input.dependencyTable.tableClassifier.dependencyTableClassifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,20 +17,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ *
+ */
 public class CourseDataFormatter {
-
-
     private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
     private final String[][] dependencyTable;
-    private final int COURSE_CODE_LENGTH = 6;
     private HashMap<String, String> courseNameHashMap = new HashMap<>();
-    private TableClassifier tableClassifier;
+    private TableClassifier dependencyTableClassifier;
+    private ClosestCourseFinder closestCourseFinder = new ClosestCourseFinder();
     private HashMap<String, Course> courseHashMap = null;
+    private List<String> misspelledCourses = new LinkedList<>();
+    //TODO: connect to DB and check for synonymous words
 
-    public CourseDataFormatter(String[][] dependencyTable) {
+    public CourseDataFormatter(String[][] dependencyTable, String locale) {
         this.dependencyTable = dependencyTable;
-        tableClassifier = new TableClassifier(dependencyTable);
+        dependencyTableClassifier = new dependencyTableClassifier(dependencyTable);
     }
+
 
     public HashMap<String, String> getCourseNameHashMap() {
         return courseNameHashMap;
@@ -38,24 +46,31 @@ public class CourseDataFormatter {
         readBasicDetailsFromTable(clearedTable);
 
         // class for reading requests columns.
-        fillRequestsColumnsFromTable(clearedTable);
+        if (dependencyTableClassifier.getTableType() == TableType.PRE_AND_PARALLEL ||
+                dependencyTableClassifier.getTableType() == TableType.PRE_PARA_HEARING)
+            fillRequestsColumnsFromTable(clearedTable);
+        logger.debug("{}", ClosestCourseFinder.mapToString(closestCourseFinder.correctionCourseNameMap));
+
+
+        logger.debug("\nNumber of misspelled courses:{}, {}", misspelledCourses.size(), UtilityPrinting.listToString(misspelledCourses));
         return courseHashMap;
     }
 
     private String[][] clearHeadersFromTable(String[][] dependenciesTable) {
         List<String[]> dataTableRows = new LinkedList<>();
         for (String[] tableRow : dependenciesTable) {
-            boolean cellWithCode = ContainsCode(tableRow[tableClassifier.getColumnNumber(TableColumn.CODE)]);
+            boolean cellWithCode = ContainsCode(tableRow[dependencyTableClassifier.getColumnNumber(TableColumn.CODE)]);
             if (cellWithCode) {
                 dataTableRows.add(tableRow);
             } else {
-                logger.info("Removed {} with code: {}", tableRow[tableClassifier.getColumnNumber(TableColumn.NAME)], tableRow[tableClassifier.getColumnNumber(TableColumn.CODE)]);
+                logger.info("Removed {} with code: {}", tableRow[dependencyTableClassifier.getColumnNumber(TableColumn.NAME)], tableRow[dependencyTableClassifier.getColumnNumber(TableColumn.CODE)]);
             }
         }
         return dataTableRows.toArray(new String[0][]);
     }
 
     private boolean ContainsCode(String codeString) {
+        final int COURSE_CODE_LENGTH = 6;
         int count = 0;
         for (int i = 0, len = codeString.length(); i < len && count < COURSE_CODE_LENGTH; i++) {
             if (Character.isDigit(codeString.charAt(i))) {
@@ -83,8 +98,8 @@ public class CourseDataFormatter {
     private List<Course> readBasicDetailsFromTableRow(String[] tableRow) {
         List<Course> rowCourses = new LinkedList<>();
         try {
-            List<String> codes = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.CODE));
-            List<String> names = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.NAME));
+            List<String> codes = getCourseDetail(tableRow, dependencyTableClassifier.getColumnNumber(TableColumn.CODE));
+            List<String> names = getCourseDetail(tableRow, dependencyTableClassifier.getColumnNumber(TableColumn.NAME));
             if (codes.size() != names.size()) {
                 List<String> fixedNames = getFixedNames(codes, names);
                 addCoursesInRow(rowCourses, codes, fixedNames);
@@ -138,29 +153,47 @@ public class CourseDataFormatter {
 
     private void fillRequestsColumnsFromTable(String[][] dependenciesTable) {
         Arrays.stream(dependenciesTable).forEach(tableRow -> {
-            List<String> coursesCodes = getCourseDetail(tableRow, tableClassifier.getColumnNumber(TableColumn.CODE));
-            List<List<Course>> coursePreRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PRE_REQUISITE)]);
-            List<List<Course>> courseParallelRequests = readRequestsArray(tableRow[tableClassifier.getColumnNumber(TableColumn.PARALLEL_REQUESTS)]);
-            try {
-                for (String courseCode : coursesCodes) {
-                    Course course = courseHashMap.get(courseCode);
-                    course.setCoursePrerequisites(coursePreRequests);
-                    course.setCourseParallelRequests(courseParallelRequests);
+            List<String> coursesCodes = getCourseDetail(tableRow, dependencyTableClassifier.getColumnNumber(TableColumn.CODE));
+            if (dependencyTableClassifier.hasRequests()) {
+                List<List<Course>> prerequisites = readRequestsArray(tableRow[dependencyTableClassifier.getColumnNumber(TableColumn.PRE_REQUESTS)]);
+                List<List<Course>> parallelRequests = readRequestsArray(tableRow[dependencyTableClassifier.getColumnNumber(TableColumn.PARALLEL_REQUESTS)]);
+                List<List<Course>> hearRequests = null;
+                if (dependencyTableClassifier.getTableType() == TableType.PRE_PARA_HEARING) {
+                    hearRequests = readRequestsArray(tableRow[dependencyTableClassifier.getColumnNumber(TableColumn.HEAR_REQUESTS)]);
                 }
-            } catch (NullPointerException e) {
-                logger.error(e.toString() + " " + e.getCause());
-                e.printStackTrace();
+                try {
+                    for (String courseCode : coursesCodes) {
+                        Course course = courseHashMap.get(courseCode);
+                        if (dependencyTableClassifier.hasRequests()) {
+                            course.setPrerequisites(prerequisites);
+                            course.setParallelRequests(parallelRequests);
+                            if (hearRequests != null && hearRequests.size() > 0) {
+                                course.setHearRequests(hearRequests);
+                            }
+                        }
+                    }
+                } catch (NullPointerException e) {
+                    logger.error(e.toString() + " " + e.getCause());
+                    e.printStackTrace();
+                }
             }
+
+
         });
     }
 
     private List<List<Course>> readRequestsArray(String courseRequestsString) {
         String cleanRequests = cleanErrors(courseRequestsString); // remove empty lines and leading/ending spaces.
-        if (cleanRequests.contentEquals("-------------------"))
+        if (isEmptyRequest(cleanRequests))
             return null;
         List<List<String>> courseRequests = parseRequestsList(cleanRequests);
 
         return getCourseRequestsList(courseRequests);
+    }
+
+    private boolean isEmptyRequest(String cleanRequests) {
+        String emptyString = "--";
+        return (cleanRequests.isEmpty() || cleanRequests.isBlank() || cleanRequests.contains(emptyString));
     }
 
     private List<List<Course>> getCourseRequestsList(List<List<String>> courseRequests) {
@@ -184,32 +217,39 @@ public class CourseDataFormatter {
 
     private String getClosestCourseName(String courseRequestString) {
         String courseCode;
-        String closestCourseName = findClosestCourseName(courseRequestString);
+        misspelledCourses.add(courseRequestString);
+        String closestCourseName = findClosestCourseName2(courseRequestString);
+        closestCourseFinder.correctionCourseNameMap.put(courseRequestString, closestCourseName);
+
         courseCode = courseNameHashMap.get(closestCourseName);
         return courseCode;
     }
 
+    //TODO: not good for short words(פת"מ 1)
     private String findClosestCourseName(String courseRequestString) {
-        StringMatcher stringMatcher = new LevenshteinDistance();
-        StringMatcher checker = new WordLevenshteinDistance();
+        /*TODO: MIN_THRESHOLD_WORD_CHECKER should be by according to the word's length.
+         *  maybe numOfEquals should be inside the calculation.
+         */
         String closestCourseName = null;
         String closestCourseNameWords = null;
-        final int minThresholdWordChecker = 12;
+        int thresholdToWordChecking = 12; // was 12 and final. courseRequestString.length()
         int minDistance = Integer.MAX_VALUE;
         int minDistanceWords = Integer.MAX_VALUE;
 
 
         for (String courseName : courseNameHashMap.keySet()) {
-            int currentDistance = stringMatcher.calculate(courseRequestString, courseName);
-            if (currentDistance <= minThresholdWordChecker) { // inconsistent course description
+            int currentDistance = LevenshteinDistance.calculate(courseRequestString, courseName);
+            int numOfEquals = getNumberOfEqualWords(courseRequestString, courseName);
+            if (currentDistance <= thresholdToWordChecking) { // inconsistent course description
                 if (currentDistance < minDistance) { // update
-                    closestCourseName = courseName;
-                    minDistance = currentDistance;
+                    if (numOfEquals >= 1) {
+                        closestCourseName = courseName;
+                        minDistance = currentDistance;
+                    }
                 }
             } else { //distance is too big for spelling error.
-                int wordsCurrentDistance = checker.calculate(courseRequestString, courseName);
+                int wordsCurrentDistance = WordLevenshteinDistance.calculate(courseRequestString, courseName);
                 if (wordsCurrentDistance < minDistanceWords) {
-                    int numOfEquals = getNumberOfEqualWords(courseRequestString, courseName);
                     if (numOfEquals > 1) { // at least 2 words are the same. => common grounds.
                         closestCourseNameWords = courseName;
                         minDistanceWords = wordsCurrentDistance;
@@ -217,25 +257,92 @@ public class CourseDataFormatter {
                 }
             }
         }
-        if (closestCourseName != null && minDistance < minThresholdWordChecker) {
+        if (closestCourseName != null && minDistance < thresholdToWordChecking) {
             logger.warn("course doesn't exist:\n" +
                     "{}\n" +
                     "{}\n" +
                     "is the closest\n" +
-                    "in distance: {} by {} algorithm.\n", courseRequestString, closestCourseName, minDistance, stringMatcher.getClass().getSimpleName());
+                    "in distance: {} by {} algorithm.\n", courseRequestString, closestCourseName, minDistance, LevenshteinDistance.class.getSimpleName());
         }
-        if (closestCourseNameWords != null && minDistance > minThresholdWordChecker) {
+        if (closestCourseNameWords != null && minDistance > thresholdToWordChecking) {
             logger.debug("course doesn't exist:\n" +
                     "{}\n" +
                     "{}\n" +
                     "is the closest\n" +
-                    "in distance: {} by {} algorithm.\n", courseRequestString, closestCourseNameWords, minDistanceWords, checker.getClass().getSimpleName());
+                    "in words distance: {} by {} algorithm.\n", courseRequestString, closestCourseNameWords, minDistanceWords, WordLevenshteinDistance.class.getSimpleName());
             return closestCourseNameWords;
         }
-        if (closestCourseName == null && closestCourseNameWords == null) {
+        if (closestCourseName == null) {
             logger.error("closest course name wasn't found for {}.", courseRequestString);
         }
         return closestCourseName;
+    }
+
+    private String findClosestCourseName2(String courseRequestString) {
+        String closestCourseString = closestCourseFinder.correctionCourseNameMap.get(courseRequestString);
+        if (closestCourseString == null) {
+            /*  for each course
+             *   if letters distance is smaller than some threshold put min lettersDistance to it.
+             *   else if(letters distance > threshold && !courseRequestsString.contains(abbreviationLetter)) check word distance && check for minimum equal words threshold(depends on number of words in courseRequestsString)
+             *   else (contains abbreviation letter) check for abbreviation letters.
+             */
+
+            int wordsDistanceThreshold = (int) (courseRequestString.length() * 0.5); //FIXME: 50% length test.
+            String closestCourseNameByLetters = null;
+            String closestCourseNameByWords = null;
+            int minLettersDistance = Integer.MAX_VALUE;
+            int minWordsDistance = Integer.MAX_VALUE;
+            int maxNumOfEqualWords = 0;
+
+            for (String courseName : courseNameHashMap.keySet()) {
+                int currentLettersDistance = LevenshteinDistance.calculate(courseRequestString, courseName);
+                if (currentLettersDistance <= wordsDistanceThreshold) { // inconsistent course description
+                    if (currentLettersDistance < minLettersDistance) { // update
+                        closestCourseNameByLetters = courseName;
+                        minLettersDistance = currentLettersDistance;
+                    }
+                } else { // checking distance in words, distance is too big for spelling error.
+                    int wordsCurrentDistance = WordLevenshteinDistance.calculate(courseRequestString, courseName);
+                    if (wordsCurrentDistance < minWordsDistance) {
+                        int numOfEquals = getNumberOfEqualWords(courseRequestString, courseName);
+                        if (numOfEquals > 1) { // at least 1 word is the same. => common grounds.
+                            if (maxNumOfEqualWords < numOfEquals) {
+                                maxNumOfEqualWords = numOfEquals;
+                                closestCourseNameByWords = courseName;
+                                //TODO: Check algorithm with this.
+                                minWordsDistance = wordsCurrentDistance;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // return closestCourse by letters/words/abbreviated or null.
+            //TODO: turn into flags with enum.
+            if (closestCourseNameByLetters != null) {
+                logger.debug("\n{} LevenshteinDistance coupled: \n{}", courseRequestString, closestCourseNameByLetters);
+                return closestCourseNameByLetters;
+
+            } else if (closestCourseNameByWords != null) {
+                logger.debug("\n{} WordLevenshteinDistance coupled:\n {}", courseRequestString, closestCourseNameByWords);
+
+                return closestCourseNameByWords;
+            } else if (AbbreviatedCourseHandler.isAbbreviationString(courseRequestString)) {
+                // if courseRequestsString is an abbreviation of an existing course return it.
+                AbbreviatedCourseHandler abbreviatedCourseHandler = new AbbreviatedCourseHandler();
+                String courseNameAbbreviated = abbreviatedCourseHandler.getCourseNameAbbreviated(courseRequestString, courseNameHashMap);
+                if (courseNameAbbreviated != null) {
+                    //FIXME AbbreviatedCourseHandler algorithm not implemented.
+                    logger.error("\n{} AbbreviatedCourseHandler coupled: \n{}", courseRequestString, courseNameAbbreviated);
+                    return courseNameAbbreviated;
+                }
+            } else {
+                logger.error("No close course name was found to {}", courseRequestString);
+                return null;
+            }
+        }
+        logger.debug("\n{} string already coupled with:\n {}", courseRequestString, closestCourseString);
+        return closestCourseString;
     }
 
     private int getNumberOfEqualWords(String closestCourseNameWords, String courseName) {
@@ -257,7 +364,7 @@ public class CourseDataFormatter {
 
     }
 
-    //תכנות אלגוריתמי ב- java  או	פתוח תכנה מתקדם II
+    //תכנות אלגוריתמי ב- java
     private List<List<String>> parseRequestsList(String cleanRequests) {
         String[] splitWordsArray = {" או ", "/", " או\t", "\\n", "\\t", ",", "."};
         LinkedList<List<String>> courseRequests = new LinkedList<>();
@@ -272,12 +379,14 @@ public class CourseDataFormatter {
         while (requestListIndex < requestsList.size()) {
             String requestString = requestsList.get(requestListIndex);
             LinkedList<String> currentRequestList = new LinkedList<>();
+            //TODO: move seperators to map.
             if (requestString.contains("/") || requestString.contains(" או ")) {
                 currentRequestList = new LinkedList<>(Arrays.asList(requestString.split("/|( או )")));
                 currentRequestList.replaceAll(String::trim);
                 for (int i = 0; i < currentRequestList.size(); i++) {
                     String courseString = currentRequestList.get(i);
                     int courseStringLength = courseString.length();
+                    //FIXME: can't be a constant number
                     int COURSE_NAME_LENGTH_THRESHOLD = 50;
                     if (courseStringLength > COURSE_NAME_LENGTH_THRESHOLD) { // can't happen to more than two courses at the same time.
                         LinkedList<String> resultCourses = getLongCourses(courseString).stream().map(String::trim).collect(Collectors.toCollection(LinkedList::new));
@@ -327,5 +436,4 @@ public class CourseDataFormatter {
         }
         return courses;
     }
-
 }

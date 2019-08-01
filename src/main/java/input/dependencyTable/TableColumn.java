@@ -1,9 +1,9 @@
-package TableManager;
+package input.dependencyTable;
 
-enum TableColumn {
+public enum TableColumn {
     CODE(0),
     NAME(1),
-    PRE_REQUISITE(2),
+    PRE_REQUESTS(2),
     PARALLEL_REQUESTS(3),
     HEAR_REQUESTS(4);
 
