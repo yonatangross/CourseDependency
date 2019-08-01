@@ -34,12 +34,16 @@ public class CourseDataFormatter {
 
     public HashMap<String, Course> readHashMapFromDependencyTable() {
         // class for reading basic columns.
-
+<<<<<<< HEAD:src/main/java/Interpreters/CourseDataFormatter.java
+       // String[][] clearedTable=clearHeadersFromTable(dependenciesTable);
+        readBasicDetailsFromTable(dependenciesTable);
+=======
         String[][] clearedTable = clearHeadersFromTable(dependencyTable);
         readBasicDetailsFromTable(clearedTable);
+>>>>>>> development:src/main/java/TableManager/CourseDataFormatter.java
 
         // class for reading requests columns.
-        fillRequestsColumnsFromTable(clearedTable);
+        fillRequestsColumnsFromTable(dependenciesTable);
         return courseHashMap;
     }
 
