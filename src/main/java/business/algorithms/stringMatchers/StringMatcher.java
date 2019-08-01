@@ -1,5 +1,7 @@
 package business.algorithms.stringMatchers;
 
 public interface StringMatcher {
-    int calculate(String s1, String s2);
+    static int calculate(String s1, String s2) {
+        return 0;
+    }
 }

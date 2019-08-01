@@ -4,9 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ClosestCourseRepository {
+public class ClosestCourseFinder {
     // stores map from bad name to good name.
-    //TODO: Change name.
     HashMap<String, String> correctionCourseNameMap = new HashMap<>();
 
     static <K, V> String mapToString(Map<K, V> map) {
@@ -20,12 +19,4 @@ public class ClosestCourseRepository {
                         })
                 .collect(Collectors.joining(", ", "{", "}"));
     }
-
-    @Override
-    public String toString() {
-        return "ClosestCourseRepository{" +
-                "correctionCourseNameMap=" + correctionCourseNameMap +
-                '}';
-    }
-
 }
