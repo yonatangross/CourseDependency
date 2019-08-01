@@ -1,6 +1,5 @@
 package business.courseManagement.courseFormating;
 
-import business.algorithms.stringMatchers.AbbreviatedCourseHandler;
 import business.algorithms.stringMatchers.LevenshteinDistance;
 import business.algorithms.stringMatchers.WordLevenshteinDistance;
 import business.entity.Course;
@@ -18,6 +17,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ *
+ */
 public class CourseDataFormatter {
     private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
     private final String[][] dependencyTable;
@@ -32,6 +34,7 @@ public class CourseDataFormatter {
         this.dependencyTable = dependencyTable;
         dependencyTableClassifier = new dependencyTableClassifier(dependencyTable);
     }
+
 
     public HashMap<String, String> getCourseNameHashMap() {
         return courseNameHashMap;
@@ -284,6 +287,7 @@ public class CourseDataFormatter {
              *   else if(letters distance > threshold && !courseRequestsString.contains(abbreviationLetter)) check word distance && check for minimum equal words threshold(depends on number of words in courseRequestsString)
              *   else (contains abbreviation letter) check for abbreviation letters.
              */
+
             int wordsDistanceThreshold = (int) (courseRequestString.length() * 0.5); //FIXME: 50% length test.
             String closestCourseNameByLetters = null;
             String closestCourseNameByWords = null;

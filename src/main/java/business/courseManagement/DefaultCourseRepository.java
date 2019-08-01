@@ -28,7 +28,7 @@ public class DefaultCourseRepository implements CourseRepository {
     public void readCourseTable(String[][] dependenciesTable) {
         CourseDataFormatter courseDataFormatter = new CourseDataFormatter(dependenciesTable,"he");
         courseHashMap = courseDataFormatter.readHashMapFromDependencyTable();
-        courseNameHashMap = courseDataFormatter.getCourseNameHashMap();
+         courseNameHashMap = courseDataFormatter.getCourseNameHashMap();
     }
 
 

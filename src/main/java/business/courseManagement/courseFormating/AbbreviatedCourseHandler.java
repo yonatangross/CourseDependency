@@ -1,4 +1,4 @@
-package business.algorithms.stringMatchers;
+package business.courseManagement.courseFormating;
 
 import java.util.HashMap;
 import java.util.HashSet;
