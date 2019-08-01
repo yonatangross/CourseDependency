@@ -4,15 +4,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class Course implements Serializable {
     private final Logger logger = LoggerFactory.getLogger(Course.class);
     private String name;
+    private Set<String> synonyms;
     private String code;
     private List<List<Course>> prerequisites;
     private List<List<Course>> parallelRequests;
     private List<List<Course>> hearRequests;
+    private LinkedList<Course> prerequisitesEdges;
+    private LinkedList<Course> parallelRequestsEdges;
+    private LinkedList<Course> hearRequestsEdges;
 
     public Course() {
     }
@@ -83,9 +89,9 @@ public class Course implements Serializable {
         StringBuilder stringBuilder = null;
         try {
             stringBuilder = new StringBuilder(courseBase);
-            if (prerequisites != null && prerequisites.size() != 0){
-                    stringBuilder.append(prerequisites.toString());
-                }
+            if (prerequisites != null && prerequisites.size() != 0) {
+                stringBuilder.append(prerequisites.toString());
+            }
             if (parallelRequests != null && parallelRequests.size() != 0) {
                 stringBuilder.append(parallelRequests.toString());
             }

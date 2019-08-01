@@ -203,7 +203,6 @@ public class CourseDataFormatter {
             for (String courseRequestString : identicalCourseRequestListString) {
                 String courseCode = courseNameHashMap.get(courseRequestString);
                 if (courseCode == null) {
-
                     courseCode = getClosestCourseName(courseRequestString);
                 }
                 if (courseCode != null) {
