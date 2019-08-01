@@ -1,6 +1,6 @@
 package business.courseManagement.courseFormating;
 
-import business.algorithms.stringMatchers.AbbreviationFinder;
+import business.algorithms.stringMatchers.AbbreviatedCourseHandler;
 import business.algorithms.stringMatchers.LevenshteinDistance;
 import business.algorithms.stringMatchers.WordLevenshteinDistance;
 import business.entity.Course;
@@ -216,7 +216,7 @@ public class CourseDataFormatter {
     private String getClosestCourseName(String courseRequestString) {
         String courseCode;
         misspelledCourses.add(courseRequestString);
-        String closestCourseName = findClosestCourseName(courseRequestString);
+        String closestCourseName = findClosestCourseName2(courseRequestString);
         closestCourseFinder.correctionCourseNameMap.put(courseRequestString, closestCourseName);
 
         courseCode = courseNameHashMap.get(closestCourseName);
@@ -270,7 +270,7 @@ public class CourseDataFormatter {
                     "in words distance: {} by {} algorithm.\n", courseRequestString, closestCourseNameWords, minDistanceWords, WordLevenshteinDistance.class.getSimpleName());
             return closestCourseNameWords;
         }
-        if (closestCourseName == null && closestCourseNameWords == null) {
+        if (closestCourseName == null) {
             logger.error("closest course name wasn't found for {}.", courseRequestString);
         }
         return closestCourseName;
@@ -282,14 +282,11 @@ public class CourseDataFormatter {
             /*  for each course
              *   if letters distance is smaller than some threshold put min lettersDistance to it.
              *   else if(letters distance > threshold && !courseRequestsString.contains(abbreviationLetter)) check word distance && check for minimum equal words threshold(depends on number of words in courseRequestsString)
-             *   else (contains abbreviation letter) check for abbreviation letters. FIXME need to algorithm explanation
+             *   else (contains abbreviation letter) check for abbreviation letters.
              */
-            String abbreviationLetter = "\"";//TODO: check me
             int wordsDistanceThreshold = (int) (courseRequestString.length() * 0.5); //FIXME: 50% length test.
             String closestCourseNameByLetters = null;
             String closestCourseNameByWords = null;
-            String courseNameAbbreviation = null;
-            boolean abbreviationStringFlag = false;
             int minLettersDistance = Integer.MAX_VALUE;
             int minWordsDistance = Integer.MAX_VALUE;
             int maxNumOfEqualWords = 0;
@@ -314,27 +311,34 @@ public class CourseDataFormatter {
                             }
                         }
                     }
-
                 }
             }
 
             // return closestCourse by letters/words/abbreviated or null.
             //TODO: turn into flags with enum.
             if (closestCourseNameByLetters != null) {
+                logger.debug("\n{} LevenshteinDistance coupled: \n{}", courseRequestString, closestCourseNameByLetters);
                 return closestCourseNameByLetters;
 
             } else if (closestCourseNameByWords != null) {
+                logger.debug("\n{} WordLevenshteinDistance coupled:\n {}", courseRequestString, closestCourseNameByWords);
+
                 return closestCourseNameByWords;
-            } else if (AbbreviationFinder.isAbbreviationString(courseRequestString)) {
+            } else if (AbbreviatedCourseHandler.isAbbreviationString(courseRequestString)) {
                 // if courseRequestsString is an abbreviation of an existing course return it.
-                String courseNameAbbreviated = AbbreviationFinder.getCourseNameAbbreviated(courseRequestString, courseNameHashMap);
-                if (courseNameAbbreviated != null)
+                AbbreviatedCourseHandler abbreviatedCourseHandler = new AbbreviatedCourseHandler();
+                String courseNameAbbreviated = abbreviatedCourseHandler.getCourseNameAbbreviated(courseRequestString, courseNameHashMap);
+                if (courseNameAbbreviated != null) {
+                    //FIXME AbbreviatedCourseHandler algorithm not implemented.
+                    logger.error("\n{} AbbreviatedCourseHandler coupled: \n{}", courseRequestString, courseNameAbbreviated);
                     return courseNameAbbreviated;
+                }
             } else {
                 logger.error("No close course name was found to {}", courseRequestString);
                 return null;
             }
         }
+        logger.debug("\n{} string already coupled with:\n {}", courseRequestString, closestCourseString);
         return closestCourseString;
     }
 
@@ -379,6 +383,7 @@ public class CourseDataFormatter {
                 for (int i = 0; i < currentRequestList.size(); i++) {
                     String courseString = currentRequestList.get(i);
                     int courseStringLength = courseString.length();
+                    //FIXME: can't be a constant number
                     int COURSE_NAME_LENGTH_THRESHOLD = 50;
                     if (courseStringLength > COURSE_NAME_LENGTH_THRESHOLD) { // can't happen to more than two courses at the same time.
                         LinkedList<String> resultCourses = getLongCourses(courseString).stream().map(String::trim).collect(Collectors.toCollection(LinkedList::new));
