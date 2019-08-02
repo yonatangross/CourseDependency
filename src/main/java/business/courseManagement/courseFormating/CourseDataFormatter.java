@@ -52,7 +52,7 @@ public class CourseDataFormatter {
         logger.debug("{}", ClosestCourseFinder.mapToString(closestCourseFinder.correctionCourseNameMap));
 
 
-        logger.debug("\nNumber of misspelled courses:{}, {}", misspelledCourses.size(), UtilityPrinting.listToString(misspelledCourses));
+        logger.info("\nNumber of misspelled courses:{}, {}", misspelledCourses.size(), UtilityPrinting.listToString(misspelledCourses));
         return courseHashMap;
     }
 
@@ -364,7 +364,6 @@ public class CourseDataFormatter {
 
     }
 
-    //תכנות אלגוריתמי ב- java
     private List<List<String>> parseRequestsList(String cleanRequests) {
         String[] splitWordsArray = {" או ", "/", " או\t", "\\n", "\\t", ",", "."};
         LinkedList<List<String>> courseRequests = new LinkedList<>();

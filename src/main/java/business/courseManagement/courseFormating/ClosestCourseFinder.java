@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ClosestCourseFinder {
+class ClosestCourseFinder {
     // stores map from bad name to good name.
     HashMap<String, String> correctionCourseNameMap = new HashMap<>();
 

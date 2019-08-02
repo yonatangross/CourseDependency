@@ -11,14 +11,14 @@ import java.util.Set;
 public class Course implements Serializable {
     private final Logger logger = LoggerFactory.getLogger(Course.class);
     private String name;
-    private Set<String> synonyms;
+//    private Set<String> synonyms;
     private String code;
     private List<List<Course>> prerequisites;
     private List<List<Course>> parallelRequests;
     private List<List<Course>> hearRequests;
-    private LinkedList<Course> prerequisitesEdges;
-    private LinkedList<Course> parallelRequestsEdges;
-    private LinkedList<Course> hearRequestsEdges;
+//    private LinkedList<Course> prerequisitesEdges;
+//    private LinkedList<Course> parallelRequestsEdges;
+//    private LinkedList<Course> hearRequestsEdges;
 
     public Course() {
     }
