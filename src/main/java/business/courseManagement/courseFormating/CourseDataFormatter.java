@@ -17,9 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- *
- */
 public class CourseDataFormatter {
     private final Logger logger = LoggerFactory.getLogger(CourseDataFormatter.class);
     private final String[][] dependencyTable;
@@ -153,7 +150,7 @@ public class CourseDataFormatter {
 
     private String formatNames(String str) {
         // remove redundant ' sign
-        String res = str.replace("'", "");
+        String res = str.replaceAll("['\\-]", "");
         // numbers to greek sign error fix.
         return res.replace("1", "I");
     }
@@ -227,67 +224,15 @@ public class CourseDataFormatter {
     private String getClosestCourseName(String courseRequestString) {
         String courseCode;
         misspelledCourses.add(courseRequestString);
-        String closestCourseName = findClosestCourseName2(courseRequestString);
+        String closestCourseName = findClosestCourseName(courseRequestString);
         closestCourseFinder.correctionCourseNameMap.put(courseRequestString, closestCourseName);
 
         courseCode = courseNameHashMap.get(closestCourseName);
         return courseCode;
     }
 
-    //TODO: not good for short words(פת"מ 1)
+
     private String findClosestCourseName(String courseRequestString) {
-        /*TODO: MIN_THRESHOLD_WORD_CHECKER should be by according to the word's length.
-         *  maybe numOfEquals should be inside the calculation.
-         */
-        String closestCourseName = null;
-        String closestCourseNameWords = null;
-        int thresholdToWordChecking = 12; // was 12 and final. courseRequestString.length()
-        int minDistance = Integer.MAX_VALUE;
-        int minDistanceWords = Integer.MAX_VALUE;
-
-
-        for (String courseName : courseNameHashMap.keySet()) {
-            int currentDistance = LevenshteinDistance.calculate(courseRequestString, courseName);
-            int numOfEquals = getNumberOfEqualWords(courseRequestString, courseName);
-            if (currentDistance <= thresholdToWordChecking) { // inconsistent course description
-                if (currentDistance < minDistance) { // update
-                    if (numOfEquals >= 1) {
-                        closestCourseName = courseName;
-                        minDistance = currentDistance;
-                    }
-                }
-            } else { //distance is too big for spelling error.
-                int wordsCurrentDistance = WordLevenshteinDistance.calculate(courseRequestString, courseName);
-                if (wordsCurrentDistance < minDistanceWords) {
-                    if (numOfEquals > 1) { // at least 2 words are the same. => common grounds.
-                        closestCourseNameWords = courseName;
-                        minDistanceWords = wordsCurrentDistance;
-                    }
-                }
-            }
-        }
-        if (closestCourseName != null && minDistance < thresholdToWordChecking) {
-            logger.warn("course doesn't exist:\n" +
-                    "{}\n" +
-                    "{}\n" +
-                    "is the closest\n" +
-                    "in distance: {} by {} algorithm.\n", courseRequestString, closestCourseName, minDistance, LevenshteinDistance.class.getSimpleName());
-        }
-        if (closestCourseNameWords != null && minDistance > thresholdToWordChecking) {
-            logger.debug("course doesn't exist:\n" +
-                    "{}\n" +
-                    "{}\n" +
-                    "is the closest\n" +
-                    "in words distance: {} by {} algorithm.\n", courseRequestString, closestCourseNameWords, minDistanceWords, WordLevenshteinDistance.class.getSimpleName());
-            return closestCourseNameWords;
-        }
-        if (closestCourseName == null) {
-            logger.error("closest course name wasn't found for {}.", courseRequestString);
-        }
-        return closestCourseName;
-    }
-
-    private String findClosestCourseName2(String courseRequestString) {
         String closestCourseString = closestCourseFinder.correctionCourseNameMap.get(courseRequestString);
         if (closestCourseString == null) {
             /*  for each course
@@ -307,7 +252,6 @@ public class CourseDataFormatter {
                 int currentLettersDistance = LevenshteinDistance.calculate(courseRequestString, courseName);
                 if (currentLettersDistance <= wordsDistanceThreshold) { // inconsistent course description
                     if (currentLettersDistance <= minLettersDistance) { // update
-                        //FIXME: add maxfitting.
                         if (currentLettersDistance == minLettersDistance) {
                             if (courseName.contains(courseRequestString) || courseRequestString.contains(courseName)) {
                                 closestCourseNameByLetters = courseName;
