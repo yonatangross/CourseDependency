@@ -131,24 +131,31 @@ public class CourseDataFormatter {
         }
     }
 
-    private List<String> getCourseDetail(String[] tableRow, int codeColNumber) {
-        String cleanString = cleanErrors(tableRow[codeColNumber]);
-        String[] split = cleanString.split("[\\t\\n/]");
+    private List<String> getCourseDetail(String[] tableRow, int colNumber) {
+        String cleanString = removeRedundantSpaces(tableRow[colNumber]);
+        String[] split;
+        if (dependencyTableClassifier.getColumnNumber(TableColumn.NAME) == colNumber) {
+            String cleanNames = formatNames(cleanString);
+            split = cleanNames.split("[\\t\\n/]");
+        } else {
+            split = cleanString.split("[\\t\\n/]");
+        }
 
         List<String> collect = Arrays.stream(split).filter(s -> !s.isEmpty()).collect(Collectors.toList());
         return collect.stream().map(String::trim).collect(Collectors.toList());
     }
 
-    private String cleanErrors(String string) {
-        String cleanString;
-        cleanString = string.trim().replace("  ", " ");
-        return spellingFixer(cleanString);
+    private String removeRedundantSpaces(String str) {
+        // remove redundant spaces.
+        return str.trim().replace("  ", " ");
+        // format typos.
     }
 
-    private String spellingFixer(String cleanString) {
-        //TODO: haven't started yet.
-
-        return cleanString;
+    private String formatNames(String str) {
+        // remove redundant ' sign
+        String res = str.replace("'", "");
+        // numbers to greek sign error fix.
+        return res.replace("1", "I");
     }
 
     private void fillRequestsColumnsFromTable(String[][] dependenciesTable) {
@@ -183,10 +190,12 @@ public class CourseDataFormatter {
     }
 
     private List<List<Course>> readRequestsArray(String courseRequestsString) {
-        String cleanRequests = cleanErrors(courseRequestsString); // remove empty lines and leading/ending spaces.
-        if (isEmptyRequest(cleanRequests))
+        String cleanRequests = removeRedundantSpaces(courseRequestsString); // remove empty lines and leading/ending spaces.
+        String typoFreeRequests = formatNames(cleanRequests);
+
+        if (isEmptyRequest(typoFreeRequests))
             return null;
-        List<List<String>> courseRequests = parseRequestsList(cleanRequests);
+        List<List<String>> courseRequests = parseRequestsList(typoFreeRequests);
 
         return getCourseRequestsList(courseRequests);
     }
@@ -297,9 +306,17 @@ public class CourseDataFormatter {
             for (String courseName : courseNameHashMap.keySet()) {
                 int currentLettersDistance = LevenshteinDistance.calculate(courseRequestString, courseName);
                 if (currentLettersDistance <= wordsDistanceThreshold) { // inconsistent course description
-                    if (currentLettersDistance < minLettersDistance) { // update
-                        closestCourseNameByLetters = courseName;
-                        minLettersDistance = currentLettersDistance;
+                    if (currentLettersDistance <= minLettersDistance) { // update
+                        //FIXME: add maxfitting.
+                        if (currentLettersDistance == minLettersDistance) {
+                            if (courseName.contains(courseRequestString) || courseRequestString.contains(courseName)) {
+                                closestCourseNameByLetters = courseName;
+                                minLettersDistance = currentLettersDistance;
+                            }
+                        } else {
+                            closestCourseNameByLetters = courseName;
+                            minLettersDistance = currentLettersDistance;
+                        }
                     }
                 } else { // checking distance in words, distance is too big for spelling error.
                     int wordsCurrentDistance = WordLevenshteinDistance.calculate(courseRequestString, courseName);

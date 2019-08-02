@@ -34,9 +34,9 @@ public class MainTrain {
            - get all course necessary for a taking a class, from user by courseID/courseName(auto complete if frontend)
            - use Observable to visualize data:
                 -each course will be displayed by his requests.
-                -differnt color for each type of requests.
+                -different color for each type of requests.
                 -modeling requires edges representation of a course: name and children/ or change the front. maybe create adapter.
-                -
+                -different weight for certain edges. FIXME
            - convert course to JSON what is the required fields?
          */
 
