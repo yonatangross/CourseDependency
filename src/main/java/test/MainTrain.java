@@ -28,13 +28,15 @@ public class MainTrain {
         defaultCourseRepository.readCourseTable(dependencyFileReader.getDependenciesTable());
         HashMap<String, Course> courseHashMap = defaultCourseRepository.getCourseHashMap();
 
-
+        // testing
         CourseGraph courseGraph = new CourseGraph(courseHashMap.values());
 
 
+        // completing
         // TODO: move from hashMap to graph and use topological sort
      /*   try (XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Test.xml")))) {
             Course c1 = courseHashMap.getTableType("636016");
+            // conflict test
             Course c2 = courseHashMap.getTableType("600093");
             e.writeObject(c1);
             e.writeObject(c2);
