@@ -1,6 +1,6 @@
-package TableManager.DependencyFileReaders;
+package input.dependencyTableReader.file;
 
-import CourseManagement.CourseManager;
+import business.courseManagement.DefaultCourseRepository;
 import org.apache.poi.xwpf.usermodel.*;
 
 import java.io.File;
@@ -53,8 +53,8 @@ public class DocxDependencyFileReader extends DependencyFileReader {
         }
     }
 
-    private CourseManager.SchoolType getSchoolType(IBodyElement element) {
-        CourseManager.SchoolType schoolType = null;
+    private DefaultCourseRepository.SchoolType getSchoolType(IBodyElement element) {
+        DefaultCourseRepository.SchoolType schoolType = null;
         logger.info("start schoolType reading");
         List<XWPFParagraph> paragraphs = element.getBody().getParagraphs();
         for (XWPFParagraph paragraph : paragraphs) {
@@ -67,7 +67,7 @@ public class DocxDependencyFileReader extends DependencyFileReader {
                 String schoolName = collect.get(0).replace("בית ספר ל", "");
                 //TODO:  schoolNamesMap.getTableType(schoolName);
                 if (schoolName.contains("מדעי המחשב")) {
-                    schoolType = CourseManager.SchoolType.COMPUTER_SCIENCE;
+                    schoolType = DefaultCourseRepository.SchoolType.COMPUTER_SCIENCE;
                     return schoolType;
                 }
             }

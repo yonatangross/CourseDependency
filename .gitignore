@@ -17,3 +17,6 @@ src/main/resources/tables/table.pdf
 src/main/resources/tables/NewTable.docx
 src/main/resources/tables/~$wTable.docx
 src/main/resources/tables/~$Table.docx
+*.meta
+*.xml
+*.zip

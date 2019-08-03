@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="NORTHWND@localhost" uuid="97eecb05-2821-4a7f-9240-c07eb5d81988">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://localhost;database=NORTHWND</jdbc-url>
+      <driver-properties>
+        <property name="applicationName" value="DataGrip" />
+      </driver-properties>
+    </data-source>
+  </component>
+</project>
