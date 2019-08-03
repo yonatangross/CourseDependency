@@ -42,6 +42,7 @@ public class MainTrain {
 
         ObjectMapper objectMapper= new ObjectMapper();
         try {
+            // efes homo
             String jsonStr = objectMapper.writeValueAsString(courseHashMap.get("636014"));
             System.out.print("\n" + jsonStr + "\n");
 
