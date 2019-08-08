@@ -1,6 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Maven template
-target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -21,3 +20,5 @@ src/main/resources/tables/~$Table.docx
 *.xml
 *.zip
 src/main/java/business/language/
+bin
+target/
