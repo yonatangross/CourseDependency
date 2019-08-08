@@ -1,24 +1,26 @@
 package business.entity;
 
+import business.util.UtilityPrinting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 public class Course implements Serializable {
     private final Logger logger = LoggerFactory.getLogger(Course.class);
     private String name;
-//    private Set<String> synonyms;
+    //    private Set<String> synonyms;
     private String code;
     private List<List<Course>> prerequisites;
     private List<List<Course>> parallelRequests;
     private List<List<Course>> hearRequests;
-//    private LinkedList<Course> prerequisitesEdges;
-//    private LinkedList<Course> parallelRequestsEdges;
-//    private LinkedList<Course> hearRequestsEdges;
+
+
+
+    public List<List<Course>> getHearRequests() {
+        return hearRequests;
+    }
 
     public Course() {
     }
@@ -28,24 +30,13 @@ public class Course implements Serializable {
         this.name = name;
     }
 
-    public List<List<Course>> getHearRequests() {
-        return hearRequests;
-    }
 
     public void setHearRequests(List<List<Course>> hearRequests) {
         this.hearRequests = hearRequests;
     }
 
-    public List<List<Course>> getPrerequisites() {
-        return prerequisites;
-    }
-
     public void setPrerequisites(List<List<Course>> prerequisites) {
         this.prerequisites = prerequisites;
-    }
-
-    public List<List<Course>> getParallelRequests() {
-        return parallelRequests;
     }
 
     public void setParallelRequests(List<List<Course>> parallelRequests) {
@@ -56,36 +47,16 @@ public class Course implements Serializable {
         return code;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
-    public String toString() {
+    public String toString() {/*
         String courseBase = "Course{" +
                 "name='" + name + '\'' +
                 ", code='" + code + '\'';
 
-       /* Field[] fields = getClass().getDeclaredFields();
-        List<Field> listFields = new LinkedList<>();
-        for (Field field : fields) {
-            if (field.getType() == java.util.List.class) {
-                listFields.add(field);
-            }
-        }
-
-        for (Field listField : listFields) {
-
-        }
-*/
         StringBuilder stringBuilder = null;
         try {
             stringBuilder = new StringBuilder(courseBase);
@@ -97,16 +68,40 @@ public class Course implements Serializable {
             }
             if (hearRequests != null && hearRequests.size() != 0) {
                 stringBuilder.append(hearRequests.toString());
+            }*/
+
+        String courseOutput = "Course: " + name;
+        StringBuilder stringBuilder2 = new StringBuilder(courseOutput);
+        try {
+
+            if (prerequisites != null && prerequisites.size() != 0) {
+                stringBuilder2.append("\n\tPrerequisites: ");
+                stringBuilder2.append(UtilityPrinting.formattedListToString(prerequisites));
+
+//                stringBuilder2.append(prerequisites.toString());
             }
+            if (parallelRequests != null && parallelRequests.size() != 0) {
+                stringBuilder2.append("\n\tParallel Requests: ");
+                stringBuilder2.append(UtilityPrinting.formattedListToString(parallelRequests));
+
+//                stringBuilder2.append(parallelRequests.toString());
+            }
+            if (hearRequests != null && hearRequests.size() != 0) {
+                stringBuilder2.append("\n\tHearing Requests ");
+                stringBuilder2.append(UtilityPrinting.formattedListToString(hearRequests));
+//                stringBuilder2.append(hearRequests.toString());
+            }
+
         } catch (Exception e) {
+            logger.error("exception while second type printing {}.", this.getName());
+            e.printStackTrace();
+        }
+       /* } catch (Exception e) {
             logger.error("exception while printing {}.", this.getName());
             e.printStackTrace();
         }
-
-        if (stringBuilder == null) {
-            logger.error("{} stringBuilder is null", this.getName());
-        }
-        return stringBuilder.toString();
-//        return courseBase;
+*/
+        return stringBuilder2.toString();
+//       return courseBase;
     }
 }

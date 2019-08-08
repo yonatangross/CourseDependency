@@ -29,8 +29,11 @@ public class MainTrain {
         //defaultCourseRepository.setSchoolType(dependencyFileReader.getSchoolType());
         defaultCourseRepository.readCourseTable(dependencyFileReader.getDependenciesTable());
         HashMap<String, Course> courseHashMap = defaultCourseRepository.getCourseHashMap();
+            System.out.println("yoni check\n");
+            System.out.println(courseHashMap.get("623411"));
+            System.out.println(courseHashMap.get("655002"));
         /*TODO features
-           - get specified courses list for necessary for a taking a class, from user by courseID/courseName(auto complete if frontend)
+           - get specified courses list necessary for a taking a class, from user by courseID/courseName(auto complete if frontend)
            - get all course necessary for a taking a class, from user by courseID/courseName(auto complete if frontend)
            - use Observable to visualize data:
                 -each course will be displayed by his requests.
@@ -42,7 +45,7 @@ public class MainTrain {
 
         ObjectMapper objectMapper= new ObjectMapper();
         try {
-            String jsonStr = objectMapper.writeValueAsString(courseHashMap.get("636014"));
+            String jsonStr = objectMapper.writeValueAsString(courseHashMap.get("623411"));
             System.out.print("\n" + jsonStr + "\n");
 
         } catch (JsonProcessingException e) {
